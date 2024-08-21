@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Treinamento</title>
+    <link rel="stylesheet" href="../css/controle.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Controle de Treinamento</h1>
+        </header>
+
+        <div class="form-container">
+            <section id="cadastrar-usuario" class="form-section">
+                <h2>Cadastrar Novo Usuário</h2>
+                <form id="form-cadastro">
+                    <div class="form-group">
+                        <label for="nome">Nome:</label>
+                        <input type="text" id="nome" required>
+                    </div>
+                    <button type="submit">Cadastrar</button>
+                </form>
+            </section>
+
+            <section id="cadastrar-treinamento" class="form-section">
+                <h2>Cadastrar Novo Treinamento</h2>
+                <form id="form-novo-treinamento">
+                    <div class="form-group">
+                        <label for="novo-treinamento">Novo Treinamento:</label>
+                        <input type="text" id="novo-treinamento" required>
+                    </div>
+                    <button type="submit">Adicionar Treinamento</button>
+                </form>
+            </section>
+        </div>
+
+        <section id="visualizar-usuarios">
+            <h2>Usuários</h2>
+            <ul id="lista-usuarios"></ul>
+            <div id="usuarios-pagination" class="pagination-controls">
+                <button id="prev-usuarios" disabled>Anterior</button>
+                <button id="next-usuarios" disabled>Próximo</button>
+            </div>
+        </section>
+
+        <section id="visualizar-treinamentos">
+            <h2>Treinamentos dos Usuários</h2>
+            <form id="form-treinamento">
+                <div class="form-group">
+                    <label for="usuario">Usuário:</label>
+                    <select id="usuario" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="treinamento">Treinamento:</label>
+                    <select id="treinamento" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="arquivo">Arquivo:</label>
+                    <input type="file" id="arquivo">
+                </div>
+                <button type="submit">Adicionar</button>
+            </form>
+            <table id="tabela-treinamentos">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Treinamento</th>
+                        <th>Data</th>
+                        <th>Arquivo</th>
+                        <th>Concluído</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas serão adicionadas dinamicamente -->
+                </tbody>
+            </table>
+            <div id="treinamentos-tabela-pagination" class="pagination-controls">
+                <button id="prev-tabela" disabled>Anterior</button>
+                <button id="next-tabela" disabled>Próximo</button>
+            </div>
+        </section>
+
+        <section id="grafico">
+            <h2>Desempenho dos Usuários</h2>
+            <canvas id="grafico-desempenho"></canvas>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/controle.js"></script>
+</body>
+</html>
