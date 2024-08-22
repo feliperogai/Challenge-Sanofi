@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@100..900&display=swap');
 
 body {
     font-family: "Work Sans", sans-serif;
@@ -7,36 +7,93 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
+
 .login-container {
-    background-color: white;
+    background-color: #fff;
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
-}
-.login-container h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
 }
+
+.login-container img {
+    display: block;
+    margin: 0 auto 20px;
+}
+
 .login-container input {
-    width: 95%;
-    padding: 10px;
+    width: 100%;
+    padding: 12px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
 }
+
+.password-hint {
+    margin-top: -10px;
+    font-size: 12px;
+    color: #555;
+    text-align: left;
+}
+
 .login-container button {
-    width: 50%;
-    padding: 10px;
-    background-color: rgb(122, 0, 230);
+    width: 100%;
+    padding: 12px;
+    background-color: #7a00e6;
     border: none;
-    color: white;
+    color: #fff;
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    font-weight: 700;
 }
+
 .login-container button:hover {
-    background-color: rgb(131, 1, 245);
+    background-color: #8301f5;
+}
+
+.login-options {
+    margin-top: 15px; /* Aumentei o valor para trazer as opções mais próximas do botão */
+    text-align: left; /* Alinha o texto à esquerda */
+}
+
+.login-options a {
+    color: #7a00e6;
+    text-decoration: none;
+    transition: text-decoration 0.3s ease;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.login-options a:hover {
+    text-decoration: underline;
+}
+
+.signup-prompt {
+    font-size: 14px;
+    color: #333;
+    margin-top: 15px; /* Ajustado para ficar mais próximo da seção de opções */
+    text-align: center;
+}
+
+.signup-prompt a {
+    color: #7a00e6;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.signup-prompt a:hover {
+    text-decoration: underline;
+}
+
+p{
+    font-weight: 700;
 }
