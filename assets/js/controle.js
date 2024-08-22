@@ -68,13 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tabelaTreinamentos.innerHTML = '';
 
-        treinamentosPagina.forEach((treinamento) => {
+        treinamentosPagina.forEach((treinamento, index) => {
             const row = tabelaTreinamentos.insertRow();
             const cellUsuario = row.insertCell();
             const cellTreinamento = row.insertCell();
             const cellData = row.insertCell();
             const cellArquivo = row.insertCell();
             const cellConcluido = row.insertCell();
+            const cellAcoes = row.insertCell(); // Coluna para ações (Excluir)
 
             cellUsuario.textContent = treinamento.usuario;
             cellTreinamento.textContent = treinamento.treinamento;
@@ -90,6 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateGrafico();
             });
             cellConcluido.appendChild(checkbox);
+
+            // Botão de Excluir
+            const excluirBtn = document.createElement('button');
+            excluirBtn.textContent = 'Excluir';
+            excluirBtn.className = 'excluir-btn';
+            excluirBtn.addEventListener('click', () => {
+                treinamentos.splice(start + index, 1); // Remove o item da lista
+                saveData();
+                updateTabelaTreinamentos();
+                updateGrafico();
+            });
+            cellAcoes.appendChild(excluirBtn);
         });
 
         document.getElementById('prev-tabela').disabled = paginaTabela === 0;
@@ -182,20 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('prev-usuarios').addEventListener('click', () => {
-        if (paginaUsuarios > 0) {
-            paginaUsuarios--;
-            updateUsuarioList();
-        }
-    });
-
-    document.getElementById('next-usuarios').addEventListener('click', () => {
-        if ((paginaUsuarios + 1) * usuariosPorPagina < usuarios.length) {
-            paginaUsuarios++;
-            updateUsuarioList();
-        }
-    });
-
     document.getElementById('prev-tabela').addEventListener('click', () => {
         if (paginaTabela > 0) {
             paginaTabela--;
@@ -213,8 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializa a página com os dados existentes
     updateUsuarioSelect();
     updateTreinamentoSelect();
-    updateUsuarioList();
     updateTabelaTreinamentos();
     updateGrafico();
 });
-
