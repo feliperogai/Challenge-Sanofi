@@ -6,18 +6,17 @@
     <title>Sanofi - Login</title>
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="icon" href="./assets/images/sanofi-logo.jpg">
+    <script src="./assets/js/script.js"></script>
 </head>
 <body>
     <div class="login-container">
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Sanofi" height="120px">
-        <form action="./assets/pages/controle.html">
-            <input type="text" placeholder="Usuário" required>
-            <input type="password" placeholder="Senha" required>
-
+        <form onsubmit="validateLogin(event)">
+            <input type="text" id="email" placeholder="Usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
             <div class="login-options">
                 <a href="./assets/pages/esqueceu-senha.html">Esqueci a senha</a>
             </div>
-
             <button type="submit">Entrar</button>
         </form>
         <div class="login-options">
@@ -26,4 +25,3 @@
     </div>
 </body>
 </html>
-

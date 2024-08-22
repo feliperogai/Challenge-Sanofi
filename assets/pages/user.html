@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações do Usuário Felipe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .info {
+            margin-bottom: 10px;
+        }
+        .info label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Informações do Usuário Felipe</h1>
+        <div class="info">
+            <label for="treinamento">Treinamento:</label>
+            <span id="treinamento">Carregando...</span>
+        </div>
+        <div class="info">
+            <label for="data">Data:</label>
+            <span id="data">Carregando...</span>
+        </div>
+        <div class="info">
+            <label for="arquivo">Arquivo Vinculado:</label>
+            <span id="arquivo">Carregando...</span>
+        </div>
+        <div class="info">
+            <label for="concluido">Concluído:</label>
+            <span id="concluido">Carregando...</span>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar as informações do localStorage
+        function carregarInformacoes() {
+            // Verificar se o localStorage contém o usuário 'Felipe'
+            const usuario = localStorage.getItem('Felipe Rogai');
+
+            if (usuario) {
+                // Parse do JSON armazenado no localStorage
+                const dados = JSON.parse(usuario);
+
+                // Atualizar o conteúdo da página com as informações
+                document.getElementById('treinamento').textContent = dados.treinamento || 'Não disponível';
+                document.getElementById('data').textContent = dados.data || 'Não disponível';
+                document.getElementById('arquivo').textContent = dados.arquivo || 'Não disponível';
+                document.getElementById('concluido').textContent = dados.concluido ? 'Sim' : 'Não';
+        }
+
+        // Carregar as informações ao carregar a página
+        window.onload = carregarInformacoes;
+    </script>
+</body>
+</html>
