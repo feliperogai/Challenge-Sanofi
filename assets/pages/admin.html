@@ -8,36 +8,37 @@
     <link rel="icon" href="../images/sanofi-logo.jpg">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <center><img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="sanofi"></center>
+    <header>
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
             <h1>Controle de Treinamento</h1>
-        </header>
-
-        <div class="form-container">
-            <section id="cadastrar-usuario" class="form-section">
-                <h2>Cadastrar Usuário</h2>
-                <form id="form-cadastro">
-                    <div class="form-group">
-                        <label for="nome">E-mail:</label>
-                        <input type="text" id="nome" required>
-                    </div>
-                    <button type="submit">Cadastrar</button>
-                </form>
-            </section>
-
-            <section id="cadastrar-treinamento" class="form-section">
-                <h2>Cadastrar Treinamento</h2>
-                <form id="form-novo-treinamento">
-                    <div class="form-group">
-                        <label for="novo-treinamento">Treinamento:</label>
-                        <input type="text" id="novo-treinamento" required>
-                    </div>
-                    <button type="submit">Cadastrar</button>
-                </form>
-            </section>
         </div>
-        
+        <p id="email" class="email">E-mail: admin@sanofi.com.br</p>
+    </header>
+
+    <div class="container">
+        <section id="cadastrar-usuario" class="form-section">
+            <h2>Cadastrar Usuário</h2>
+            <form id="form-cadastro">
+                <div class="form-group">
+                    <label for="nome">E-mail:</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+
+        <section id="cadastrar-treinamento" class="form-section">
+            <h2>Cadastrar Treinamento</h2>
+            <form id="form-novo-treinamento">
+                <div class="form-group">
+                    <label for="novo-treinamento">Treinamento:</label>
+                    <input type="text" id="novo-treinamento" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+
         <section id="visualizar-treinamentos">
             <h2>Treinamentos dos Usuários</h2>
             <form id="form-treinamento">
@@ -58,6 +59,7 @@
                     <input type="file" id="arquivo" required>
                 </div>
                 <button type="submit">Adicionar</button>
+                <p id="confirmation-message" class="confirmation-message"></p>
             </form>
             <table id="tabela-treinamentos">
                 <thead>
@@ -67,7 +69,7 @@
                         <th>Data</th>
                         <th>Arquivo</th>
                         <th>Concluído</th>
-                        <th>Ações</th> <!-- Coluna para ações (Excluir) -->
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>

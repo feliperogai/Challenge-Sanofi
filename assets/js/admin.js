@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuarioSelect = document.getElementById('usuario');
     const treinamentoSelect = document.getElementById('treinamento');
     const ctx = document.getElementById('grafico-desempenho').getContext('2d');
+    const confirmationMessage = document.getElementById('confirmation-message');
 
     let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
     let treinamentos = JSON.parse(localStorage.getItem('treinamentos')) || [];
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.addEventListener('change', () => {
                 treinamento.concluido = checkbox.checked;
                 saveData();
+                updateTabelaTreinamentos();
                 updateGrafico();
             });
             cellConcluido.appendChild(checkbox);
@@ -110,31 +112,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateGrafico() {
-        const labels = usuarios;
-        const dadosConcluidos = usuarios.map(usuario => {
+        const labels = [...new Set(treinamentos.map(t => t.usuario))]; // Lista de usuários
+        const dadosConcluidos = labels.map(usuario => {
             return treinamentos.filter(t => t.usuario === usuario && t.concluido).length;
         });
-        const dadosNaoConcluidos = usuarios.map(usuario => {
+        const dadosNaoConcluidos = labels.map(usuario => {
             return treinamentos.filter(t => t.usuario === usuario && !t.concluido).length;
         });
 
-        new Chart(ctx, {
+        if (window.graficoDesempenho) {
+            window.graficoDesempenho.destroy();
+        }
+
+        window.graficoDesempenho = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Concluído',
-                    data: dadosConcluidos,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Não Concluído',
-                    data: dadosNaoConcluidos,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
+                datasets: [
+                    {
+                        label: 'Concluído',
+                        data: dadosConcluidos,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Não Concluído',
+                        data: dadosNaoConcluidos,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
             },
             options: {
                 scales: {
@@ -155,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             saveData();
             updateUsuarioSelect();
             updateUsuarioList();
-            updateGrafico();
             formCadastro.reset();
         }
     });
@@ -192,6 +200,29 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTabelaTreinamentos();
             updateGrafico();
             formTreinamento.reset();
+
+            // Mostrar mensagem de confirmação
+            confirmationMessage.textContent = 'Treinamento adicionado com sucesso!';
+            confirmationMessage.style.display = 'block';
+
+            // Ocultar mensagem após 3 segundos
+            setTimeout(() => {
+                confirmationMessage.style.display = 'none';
+            }, 3000);
+        }
+    });
+
+    document.getElementById('prev-usuarios').addEventListener('click', () => {
+        if (paginaUsuarios > 0) {
+            paginaUsuarios--;
+            updateUsuarioList();
+        }
+    });
+
+    document.getElementById('next-usuarios').addEventListener('click', () => {
+        if ((paginaUsuarios + 1) * usuariosPorPagina < usuarios.length) {
+            paginaUsuarios++;
+            updateUsuarioList();
         }
     });
 
@@ -209,9 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Inicializa a página com os dados existentes
+    // Inicializar os dados e atualizar as exibições
     updateUsuarioSelect();
     updateTreinamentoSelect();
+    updateUsuarioList();
     updateTabelaTreinamentos();
     updateGrafico();
 });

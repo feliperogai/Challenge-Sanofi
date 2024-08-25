@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Define o estilo global da página */
+body {
+    margin: 0;
+    font-family: "Work Sans", sans-serif;
+    color: #333;
+    background-color: #f4f4f4;
+    padding-top: 80px; /* Ajusta o padding para compensar a altura do header fixo */
+}
+
+/* Estilo para o header */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Altura do header */
+    background: #ffffff; /* Cor de fundo branca */
+    color: #333; /* Cor do texto escura para contraste */
+    padding: 0 20px; /* Padding lateral */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribui o conteúdo com espaço entre os itens */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    z-index: 1000; /* Garante que o header fique acima de outros conteúdos */
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+header img {
+    height: 60px; /* Ajusta a altura da imagem para ocupar toda a altura do header */
+    width: auto; /* Mantém a proporção da imagem */
+    margin-right: 20px; /* Espaçamento entre a imagem e o texto */
+}
+
+header h1 {
+    margin: 0; /* Remove a margem padrão do h1 */
+    font-size: 1.5rem; /* Tamanho da fonte */
+    font-weight: normal; /* Mantém a fonte normal para um visual mais formal */
+}
+
+#email-filtrado {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: auto; /* Alinha o e-mail ao canto direito */
+    padding: 30px;
+}
+
+/* Estilo para o contêiner geral */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Estilo para o contêiner de tickets */
+#tickets-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+/* Estilo para cada ticket */
+.ticket {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 12px;
+    width: calc(25% - 16px); /* Ajusta a largura para 25% menos o espaço do gap */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Inclui padding e border na largura total */
+}
+
+.ticket h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.ticket p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.ticket a {
+    display: inline-block;
+    margin-top: 8px;
+    color: rgb(122, 0, 230);
+    text-decoration: none;
+}
+
+.ticket a:hover {
+    text-decoration: underline;
+}
+
+.ticket .concluido {
+    font-weight: bold;
+    color: green;
+}
+
+.ticket .nao-concluido {
+    font-weight: bold;
+    color: red;
+}
+
+/* Estilo para os botões de navegação */
+#pagination-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#pagination-controls button {
+    background-color: rgb(122, 0, 230);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#pagination-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#pagination-controls button:hover:not(:disabled) {
+    background-color: rgb(131, 1, 245);
+}
+
+/* Estilo para o gráfico de desempenho */
+#grafico-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#grafico-desempenho {
+    max-width: 100%;
+    height: 300px; /* Aumenta a altura do gráfico */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* Centraliza o gráfico */
+    display: block; /* Garante que o gráfico não se mova */
+}

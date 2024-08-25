@@ -1,73 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informações do Usuário Felipe</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        .info {
-            margin-bottom: 10px;
-        }
-        .info label {
-            font-weight: bold;
-        }
-    </style>
+    <title>Sanofi - Acompanhamento de Treinamento</title>
+    <link rel="stylesheet" href="../css/user.css">
+    <link rel="icon" href="../images/sanofi-logo.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Informações do Usuário Felipe</h1>
-        <div class="info">
-            <label for="treinamento">Treinamento:</label>
-            <span id="treinamento">Carregando...</span>
+    <header>
+        <img src="../images/sanofi.png" alt="Logo da Empresa">
+        <h1>Acompanhamento de Treinamento</h1>
+        <div id="email-filtrado">user@sanofi.com.br</div>
+    </header>
+    <main>
+        <div id="tickets-container">
+            <!-- Exemplo de tickets -->
+            <div class="ticket">
+                <h3>Treinamento 1</h3>
+                <p>Data: 01/01/2024</p>
+                <p>Descrição do treinamento.</p>
+                <a href="#">Ver Detalhes</a>
+                <p class="concluido">Status: Concluído</p>
+            </div>
+            <div class="ticket">
+                <h3>Treinamento 2</h3>
+                <p>Data: 05/01/2024</p>
+                <p>Descrição do treinamento.</p>
+                <a href="#">Ver Detalhes</a>
+                <p class="nao-concluido">Status: Não Concluído</p>
+            </div>
+            <!-- Adicione mais tickets aqui -->
         </div>
-        <div class="info">
-            <label for="data">Data:</label>
-            <span id="data">Carregando...</span>
+
+        <div id="pagination-controls">
+            <button id="prev-tickets">Anterior</button>
+            <button id="next-tickets">Próximo</button>
         </div>
-        <div class="info">
-            <label for="arquivo">Arquivo Vinculado:</label>
-            <span id="arquivo">Carregando...</span>
+
+        <div id="grafico-container">
+            <canvas id="grafico-desempenho"></canvas>
         </div>
-        <div class="info">
-            <label for="concluido">Concluído:</label>
-            <span id="concluido">Carregando...</span>
-        </div>
-    </div>
+    </main>
 
-    <script>
-        // Função para carregar as informações do localStorage
-        function carregarInformacoes() {
-            // Verificar se o localStorage contém o usuário 'Felipe'
-            const usuario = localStorage.getItem('Felipe Rogai');
-
-            if (usuario) {
-                // Parse do JSON armazenado no localStorage
-                const dados = JSON.parse(usuario);
-
-                // Atualizar o conteúdo da página com as informações
-                document.getElementById('treinamento').textContent = dados.treinamento || 'Não disponível';
-                document.getElementById('data').textContent = dados.data || 'Não disponível';
-                document.getElementById('arquivo').textContent = dados.arquivo || 'Não disponível';
-                document.getElementById('concluido').textContent = dados.concluido ? 'Sim' : 'Não';
-        }
-
-        // Carregar as informações ao carregar a página
-        window.onload = carregarInformacoes;
-    </script>
+    <script src="../js/user.js"></script>
 </body>
 </html>
