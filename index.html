@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sanofi - Login</title>
     <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="icon" href="./assets/images/sanofi-logo.jpg">
-    <script src="./assets/js/script.js"></script>
+    <link rel="icon" href="./assets/images/sanofi-logo.jpg" type="image/jpeg">
+    <script src="./assets/js/script.js" defer></script>
 </head>
 <body>
     <div class="login-container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Sanofi" height="120px">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Sanofi" height="120">
         <form onsubmit="validateLogin(event)">
             <input type="text" id="email" placeholder="Usuário" required>
             <input type="password" id="password" placeholder="Senha" required>
@@ -22,6 +22,9 @@
         <div class="login-options">
             <p class="signup-prompt">Ainda não possui conta? <a href="./assets/pages/cadastro.html">Faça seu cadastro.</a></p>
         </div>
+    </div>
+    <div class="button-container">
+        <a href="./assets/pages/qrcode.html" class="action-button">Confirmar presença online!</a>
     </div>
 </body>
 </html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanofi - Formulário</title>
+    <link rel="stylesheet" href="../css/qrcode.css">
+    <link rel="icon" href="../images/sanofi-logo.jpg">
+</head>
+<body>
+    <div class="container">
+        <center><a href="/index.html"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="sanofi" height="120px"></a></center>
+        <h2>Formulário de Dados</h2>
+        <form id="dataForm">
+            <label for="name">Nome Completo:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label for="date">Data e Hora:</label>
+            <input type="text" id="date" name="date" readonly><br>
+
+            <label for="signature">Assinatura:</label>
+            <input type="text" id="signature" name="signature" required><br>
+
+            <button type="button" onclick="generateAndUploadPDF()">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../js/qrcode.js"></script>
+</body>
+</html>
