@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.font = "20px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("Nenhum dado disponível", ctx.canvas.width / 2, ctx.canvas.height / 2);
+            ctx.fillText("", ctx.canvas.width / 2, ctx.canvas.height / 2);
         }
     }
 
