@@ -51,3 +51,19 @@ button {
 button:hover {
     background-color: rgb(131, 1, 245);
 }
+
+.container a{
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: #7a00e6;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+
+}
+
+.container a:hover{
+    text-decoration: underline;
+
+}
