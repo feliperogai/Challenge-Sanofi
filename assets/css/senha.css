@@ -75,6 +75,7 @@ body {
     color: #7a00e6;
     text-decoration: none;
     font-size: 14px;
+    font-weight: 700;
 }
 
 .reset-password-form a:hover {
