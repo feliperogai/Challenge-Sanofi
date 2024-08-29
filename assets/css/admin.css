@@ -156,3 +156,81 @@ th {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
 }
+
+/* Media Queries para responsividade */
+
+/* Estilos para telas menores que 768px (tablets e smartphones) */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .header-container {
+        flex-direction: column;
+    }
+
+    .logo {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    .container {
+        padding: 80px 10px 10px; /* Ajuste o padding para telas menores */
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    table, th, td {
+        font-size: 0.875rem;
+    }
+
+    #grafico {
+        padding: 15px;
+    }
+}
+
+/* Estilos para telas menores que 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 1.125rem;
+    }
+
+    button {
+        font-size: 0.875rem;
+        padding: 10px;
+    }
+
+    .email {
+        font-size: 0.875rem;
+        padding: 20px;
+    }
+
+    table, th, td {
+        font-size: 0.75rem;
+        padding: 8px;
+    }
+}
