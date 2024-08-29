@@ -40,6 +40,7 @@ header {
     z-index: 1100; /* Garantir que o ícone esteja acima da imagem */
 }
 
+/* Estilo dos itens do menu hamburguer */
 .menu-icon div {
     width: 30px;
     height: 4px;
@@ -59,7 +60,7 @@ header h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: normal;
-    flex: 2;
+    flex: 1; /* Permite que o título ocupe o espaço restante */
     text-align: left;
 }
 
@@ -216,23 +217,25 @@ main {
 /* Telas menores que 768px */
 @media (max-width: 768px) {
     header {
-        flex-direction: column;
+        flex-direction: row;
         padding: 10px;
-        text-align: center;
+        justify-content: space-between; /* Garante que o menu hamburguer fique alinhado à esquerda */
+        text-align: left;
     }
 
     .menu-icon {
-        position: relative;
         margin: 0;
+        order: 1; /* Garante que o menu hamburguer fique à esquerda */
     }
 
     header img {
-        margin-right: 0;
-        margin-bottom: 10px;
+        margin-right: 10px;
     }
 
     header h1 {
         font-size: 1.25rem;
+        margin-left: 10px; /* Ajusta a margem para que o título não fique colado à imagem */
+        flex: 2; /* Permite que o título ocupe mais espaço se necessário */
     }
 
     .ticket {
@@ -246,6 +249,20 @@ main {
 
 /* Telas menores que 480px */
 @media (max-width: 480px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start; /* Garante que os itens fiquem alinhados à esquerda */
+        padding: 10px;
+    }
+
+    .menu-icon {
+        margin: 0;
+    }
+
+    header img {
+        margin-bottom: 10px;
+    }
+
     header h1 {
         font-size: 1rem;
     }
@@ -258,3 +275,4 @@ main {
         height: 200px;
     }
 }
+
