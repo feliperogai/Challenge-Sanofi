@@ -150,7 +150,6 @@ main {
 /* Telas menores que 768px */
 @media (max-width: 768px) {
     header {
-        height: auto;
         flex-direction: column;
         padding: 10px;
         text-align: center;
