@@ -10,10 +10,25 @@
 </head>
 <body>
     <header>
-        <img src="../images/sanofi.png" alt="Logo da Empresa">
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo da Empresa">
         <h1>Acompanhamento de Treinamento</h1>
-        <div id="email-filtrado">user@sanofi.com.br</div>
     </header>
+
+    <div id="side-menu">
+        <button class="closebtn" onclick="closeMenu()">&times;</button>
+        <div class="user-info">
+            <p><strong>Nome do Usuário</strong></p>
+            <p>Email: user@sanofi.com.br</p>
+        </div>
+        <a href="#">Configurações da Conta</a>
+        <a href="../../index.html">Sair</a>
+    </div>
+
     <main>
         <div id="tickets-container">
             <div class="ticket">
@@ -43,5 +58,14 @@
     </main>
 
     <script src="../js/user.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('side-menu').style.width = '250px';
+        }
+
+        function closeMenu() {
+            document.getElementById('side-menu').style.width = '0';
+        }
+    </script>
 </body>
 </html>

@@ -27,6 +27,7 @@ body {
     margin: 0 auto 20px;
     max-width: 100%; /* Garante que a imagem seja responsiva */
     height: auto; /* Mantém a proporção da imagem */
+    height: 120px;
 }
 
 .login-container input {

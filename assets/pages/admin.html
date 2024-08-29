@@ -9,12 +9,26 @@
 </head>
 <body>
     <header>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <div class="header-container">
             <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
             <h1>Controle de Treinamento</h1>
         </div>
-        <p id="email" class="email">E-mail: admin@sanofi.com.br</p>
     </header>
+
+    <div id="side-menu">
+        <button class="closebtn" onclick="closeMenu()">&times;</button>
+        <div class="user-info">
+            <p><strong>Nome do Usuário</strong></p>
+            <p>Email: admin@sanofi.com.br</p>
+        </div>
+        <a href="#">Configurações da Conta</a>
+        <a href="../../index.html">Sair</a>
+    </div>
 
     <div class="container">
         <section id="cadastrar-usuario" class="form-section">
@@ -58,7 +72,7 @@
                     <label for="arquivo">Arquivo:</label>
                     <input type="file" id="arquivo" required>
                 </div>
-                <button type="submit">Adicionar</button>
+                <div class="form-button"><button type="submit" id="add">Adicionar</button></div>
                 <p id="confirmation-message" class="confirmation-message"></p>
             </form>
             <table id="tabela-treinamentos">
@@ -89,5 +103,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../js/admin.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('side-menu').style.width = '250px';
+        }
+
+        function closeMenu() {
+            document.getElementById('side-menu').style.width = '0';
+        }
+    </script>
 </body>
 </html>
