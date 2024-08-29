@@ -90,7 +90,6 @@ header h1 {
     background-color: var(--card-background);
     color: var(--text-color-dark);
     overflow-x: hidden;
-    transition: width 0.3s;
     padding-top: 60px;
     box-shadow: 2px 0 5px var(--card-shadow);
     z-index: 1000;
