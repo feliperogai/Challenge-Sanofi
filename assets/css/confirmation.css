@@ -17,6 +17,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    padding: 20px;
 }
 
 /* Container principal da confirmação */
@@ -33,11 +34,14 @@ body {
 /* Estilo da imagem do logo */
 .confirmation-container img {
     margin-bottom: 20px;
+    max-width: 100%;
+    height: auto;
 }
 
 /* Estilo do título */
 .confirmation-container h2 {
     margin-bottom: 15px;
+    font-size: 1.5rem;
 }
 
 /* Estilo do parágrafo */
@@ -55,4 +59,38 @@ body {
 
 .confirmation-options a:hover {
     text-decoration: underline;
+}
+
+/* Media Queries para responsividade */
+
+/* Ajustes para telas menores que 768px */
+@media (max-width: 768px) {
+    .confirmation-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .confirmation-container h2 {
+        font-size: 1.25rem;
+    }
+
+    .confirmation-container p {
+        font-size: 14px;
+    }
+}
+
+/* Ajustes para telas menores que 480px */
+@media (max-width: 480px) {
+    .confirmation-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .confirmation-container h2 {
+        font-size: 1.125rem;
+    }
+
+    .confirmation-container p {
+        font-size: 14px;
+    }
 }

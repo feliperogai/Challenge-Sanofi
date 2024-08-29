@@ -1,3 +1,4 @@
+/* Reset de estilo e configuração básica */
 * {
     margin: 0;
     padding: 0;
@@ -5,14 +6,17 @@
     font-family: Arial, sans-serif;
 }
 
+/* Estilo do corpo */
 body {
     background-color: #f2f2f2;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding: 20px;
 }
 
+/* Container principal */
 .container {
     background-color: #fff;
     padding: 30px;
@@ -22,11 +26,15 @@ body {
     max-width: 400px;
 }
 
+/* Estilo da imagem */
 .registration-form img {
     display: block;
     margin: 0 auto 20px;
+    max-width: 100%;
+    height: auto;
 }
 
+/* Estilo do título */
 .registration-form h2 {
     margin-bottom: 20px;
     font-size: 24px;
@@ -34,6 +42,7 @@ body {
     text-align: center;
 }
 
+/* Estilo dos rótulos */
 .registration-form label {
     display: block;
     margin-bottom: 5px;
@@ -41,6 +50,7 @@ body {
     color: #333;
 }
 
+/* Estilo dos campos de entrada */
 .registration-form input[type="text"],
 .registration-form input[type="email"],
 .registration-form input[type="password"] {
@@ -51,6 +61,7 @@ body {
     border-radius: 4px;
 }
 
+/* Estilo do botão */
 .registration-form button {
     width: 100%;
     padding: 10px;
@@ -68,6 +79,7 @@ body {
     background-color: #8301f5;
 }
 
+/* Estilo do texto de convite para se cadastrar */
 .signup-prompt {
     margin-top: 15px;
     text-align: center;
@@ -85,6 +97,36 @@ body {
     text-decoration: underline;
 }
 
-p{
+/* Estilo do parágrafo */
+p {
     font-weight: 700;
+}
+
+/* Media Queries para responsividade */
+
+/* Ajustes para telas menores que 480px */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    .registration-form h2 {
+        font-size: 20px;
+    }
+
+    .registration-form input[type="text"],
+    .registration-form input[type="email"],
+    .registration-form input[type="password"] {
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .registration-form button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .signup-prompt {
+        font-size: 12px;
+    }
 }
