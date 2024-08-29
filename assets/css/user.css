@@ -264,8 +264,8 @@ main {
     }
 }
 
-/* Telas menores que 450px */
-@media (max-width: 450px) {
+/* Telas menores que 390px */
+@media (max-width: 390px) {
     header {
         flex-direction: column;
         align-items: flex-start; /* Garante que os itens fiquem alinhados à esquerda */
