@@ -7,6 +7,7 @@ body {
     color: #333;
     background-color: #f4f4f4;
     padding-top: 80px; /* Espaço para o cabeçalho fixo */
+    box-sizing: border-box; /* Garante que o padding seja considerado dentro do tamanho do box */
 }
 
 /* Estilo do header */
@@ -24,6 +25,7 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     box-sizing: border-box;
+    justify-content: space-between; /* Alinha os itens do header */
 }
 
 /* Menu de ícone */
