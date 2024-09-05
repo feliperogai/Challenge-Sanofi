@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanofi - Configuração do Usuário</title>
+    <link rel="stylesheet" href="../assets/css/configuracao.css">
+    <link rel="icon" href="../assets/images/sanofi-logo.jpg">
+</head>
+<body>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo da Empresa">
+        <h1>Configuração da Conta</h1>
+    </header>
+
+    <div id="side-menu">
+        <button class="closebtn" onclick="closeMenu()">&times;</button>
+        <div class="user-info">
+            <p><strong><span id="user-nome">Nome do Usuário</span></strong></p>
+            <p><strong><span id="user-email">user@sanofi.com.br</span></strong></p>
+        </div>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+
+    <main>
+        <div class="config-form">
+            <h2>Atualizar Nome de Usuário</h2>
+            <form id="updateNomeForm">
+                <label for="new-name">Novo Nome de Usuário:</label>
+                <input type="text" id="new-name" name="new-name" required>
+                <button type="submit">Atualizar Nome</button>
+            </form>
+
+            <h2>Atualizar Senha</h2>
+            <form id="updateSenhaForm">
+                <label for="current-password">Senha Atual:</label>
+                <input type="password" id="current-password" name="current-password" required>
+                
+                <label for="new-password">Nova Senha:</label>
+                <input type="password" id="new-password" name="new-password" required>
+                <button type="submit">Atualizar Senha</button>
+            </form>
+
+            <!-- Botão de voltar -->
+            <button class="btn-back" onclick="window.history.back()">Voltar</button>
+        </div>
+    </main>
+
+    <script>
+        // Funções de controle do menu lateral
+        function toggleMenu() {
+            document.getElementById('side-menu').style.width = '250px';
+        }
+
+        function closeMenu() {
+            document.getElementById('side-menu').style.width = '0';
+        }
+
+        // Função para capturar parâmetros da URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Captura o e-mail e o nome da URL e exibe no menu
+        const userEmail = getQueryParam('email');
+        const userNome = getQueryParam('nome'); // Supondo que o nome também foi passado na URL
+
+        if (userEmail) {
+            document.getElementById('user-email').textContent = userEmail;
+        }
+        if (userNome) {
+            document.getElementById('user-nome').textContent = userNome;
+        }
+
+        // Função para sair e limpar os dados do usuário
+        function logout() {
+            // Redireciona para a página de login ou outra desejada
+            window.location.href = '/index.html';
+        }
+
+        // Função para atualizar o nome de usuário
+        document.getElementById('updateNomeForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Evita o envio do formulário
+
+            const newName = document.getElementById('new-name').value;
+
+            fetch('/update-nome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail, // Email do usuário para identificar
+                    new_name: newName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.mensagem);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar o nome.');
+            });
+        });
+
+        // Função para atualizar a senha
+        document.getElementById('updateSenhaForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Evita o envio do formulário
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            fetch('/update-senha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail, // Email do usuário para identificar
+                    current_password: currentPassword,
+                    new_password: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.mensagem);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar a senha.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,9 +1,10 @@
-/* Reset de estilo e configuração básica */
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@100..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: "Work Sans", sans-serif;
 }
 
 /* Estilo do corpo */

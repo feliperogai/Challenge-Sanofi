@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sanofi - Cadastro de Usuário</title>
-    <link rel="stylesheet" href="../css/cadastro.css">
-    <link rel="icon" href="../images/sanofi-logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="/assets/css/cadastro.css">
+    <link rel="icon" href="/assets/images/sanofi-logo.jpg" type="image/jpeg">
     <style>
         /* Adicionando estilos básicos para as mensagens de erro */
         .error {
@@ -21,7 +21,7 @@
         <div class="registration-form">
             <center><img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Sanofi"></center>
             <h2>Criar Conta</h2>
-            <form id="registrationForm" action="/register" method="POST">
+            <form id="registrationForm">
                 <div>
                     <label for="name">Nome de Usuário:</label>
                     <input type="text" id="name" name="name" required>
@@ -54,6 +54,8 @@
 
     <script>
         document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita o envio padrão do formulário
+
             let valid = true;
 
             // Limpa as mensagens de erro anteriores
@@ -96,8 +98,29 @@
                 valid = false;
             }
 
-            if (!valid) {
-                event.preventDefault(); // Impede o envio do formulário se houver erros
+            if (valid) {
+                // Se o formulário for válido, envia os dados via AJAX
+                fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensagem) {
+                        alert(data.mensagem); // Exibe a mensagem retornada pelo servidor
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro ao registrar o usuário.');
+                });
             }
         });
 
@@ -109,5 +132,3 @@
     </script>
 </body>
 </html>
-
-

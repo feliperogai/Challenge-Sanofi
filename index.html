@@ -11,8 +11,8 @@
 <body>
     <div class="login-container">
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Sanofi">
-        <form onsubmit="validateLogin(event)">
-            <input type="text" id="email" placeholder="Usuário" required>
+        <form id="loginForm">
+            <input type="text" id="email" placeholder="E-mail" required>
             <input type="password" id="password" placeholder="Senha" required>
             <div class="login-options">
                 <a href="./assets/pages/senha.html">Esqueci a senha</a>
@@ -20,7 +20,7 @@
             <button type="submit">Entrar</button>
         </form>
         <div class="login-options">
-            <p class="signup-prompt">Ainda não possui conta? <a href="./assets/pages/cadastro.html">Faça seu cadastro.</a></p>
+            <p class="signup-prompt">Ainda não possui conta? <a href="./templates/cadastro.html">Faça seu cadastro.</a></p>
         </div>
     </div>
     <div class="button-container">

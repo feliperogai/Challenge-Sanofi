@@ -1,0 +1,208 @@
+from flask import Flask, render_template, request, jsonify, send_from_directory
+import mysql.connector
+from mysql.connector import pooling
+import hashlib
+import os
+
+app = Flask(__name__)
+
+# Configurações do banco de dados
+db_config = {
+    'user': 'root',
+    'password': '010403',  # Substitua pela sua senha do MySQL
+    'host': 'localhost',
+    'database': 'sistema_login'
+}
+
+# Configura o pool de conexões
+try:
+    db_pool = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name="mypool",
+        pool_size=5,
+        **db_config
+    )
+except mysql.connector.Error as err:
+    print(f"Erro ao configurar pool de conexões: {err}")
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def get_db_connection():
+    try:
+        return db_pool.get_connection()
+    except mysql.connector.Error as err:
+        print(f"Erro ao obter conexão: {err}")
+        return None
+
+# Rota para a página inicial (index.html)
+@app.route('/index.html')
+def index():
+    return send_from_directory(os.path.join(app.root_path), 'index.html')
+
+# Rota para a página de cadastro (cadastro.html)
+@app.route('/templates/cadastro.html')
+def cadastro():
+    return render_template('cadastro.html')
+
+# Rota para a página de configuração do usuário
+@app.route('/templates/configuracao.html')
+def configuracao():
+    return render_template('configuracao.html')  # Flask procura na pasta "templates"
+
+# Rota para cadastro de usuário
+@app.route('/register', methods=['POST'])
+def register_user():
+    data = request.json
+    nome_usuario = data.get('name')
+    email = data.get('email')
+    senha = hash_password(data.get('password'))
+
+    if not nome_usuario or not email or not senha:
+        return jsonify({'mensagem': 'Dados inválidos!'}), 400
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
+
+    try:
+        cursor = conn.cursor()
+
+        # Verifica se o e-mail já está cadastrado
+        cursor.execute("SELECT email FROM usuarios WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            return jsonify({'mensagem': 'E-mail já cadastrado!'}), 400
+
+        # Insere o novo usuário no banco de dados
+        cursor.execute("""
+            INSERT INTO usuarios (nome_usuario, email, senha)
+            VALUES (%s, %s, %s)
+        """, (nome_usuario, email, senha))
+
+        conn.commit()
+        return jsonify({'mensagem': 'Usuário cadastrado com sucesso!'})
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao registrar o usuário: {err}")
+        return jsonify({'mensagem': 'Erro ao registrar o usuário.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Rota para login de usuário
+@app.route('/login', methods=['POST'])
+def login_user():
+    data = request.json
+    email = data.get('email')
+    senha = hash_password(data.get('password'))
+
+    if not email or not senha:
+        return jsonify({'mensagem': 'Dados inválidos!'}), 400
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
+
+    try:
+        cursor = conn.cursor()
+
+        # Verifica se o e-mail e a senha estão corretos
+        cursor.execute("SELECT nome_usuario, tipo_usuario FROM usuarios WHERE email = %s AND senha = %s", (email, senha))
+        user = cursor.fetchone()
+
+        if user:
+            nome_usuario, tipo_usuario = user
+            if tipo_usuario == 'admin':
+                redirect_url = '/assets/pages/admin.html'
+            else:
+                # Redireciona para a página do usuário com o e-mail e o nome na URL
+                redirect_url = f'/assets/pages/user.html?email={email}&nome={nome_usuario}'
+            return jsonify({'redirect': redirect_url})
+
+        return jsonify({'mensagem': 'Email ou senha incorretos.'}), 401
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao autenticar o usuário: {err}")
+        return jsonify({'mensagem': 'Erro ao autenticar o usuário.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Rota para atualização do nome de usuário
+@app.route('/update-nome', methods=['POST'])
+def update_nome():
+    data = request.json
+    email = data.get('email')
+    new_name = data.get('new_name')
+
+    if not email or not new_name:
+        return jsonify({'mensagem': 'Dados inválidos!'}), 400
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
+
+    try:
+        cursor = conn.cursor()
+
+        # Atualiza o nome do usuário no banco de dados
+        cursor.execute("UPDATE usuarios SET nome_usuario = %s WHERE email = %s", (new_name, email))
+        conn.commit()
+
+        return jsonify({'mensagem': 'Nome de usuário atualizado com sucesso!'})
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao atualizar o nome de usuário: {err}")
+        return jsonify({'mensagem': 'Erro ao atualizar o nome.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Rota para atualização de senha
+@app.route('/update-senha', methods=['POST'])
+def update_senha():
+    data = request.json
+    email = data.get('email')
+    current_password = hash_password(data.get('current_password'))
+    new_password = hash_password(data.get('new_password'))
+
+    if not email or not current_password or not new_password:
+        return jsonify({'mensagem': 'Dados inválidos!'}), 400
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
+
+    try:
+        cursor = conn.cursor()
+
+        # Verifica se a senha atual está correta
+        cursor.execute("SELECT senha FROM usuarios WHERE email = %s", (email,))
+        stored_password = cursor.fetchone()
+
+        if stored_password and stored_password[0] == current_password:
+            # Atualiza a senha no banco de dados
+            cursor.execute("UPDATE usuarios SET senha = %s WHERE email = %s", (new_password, email))
+            conn.commit()
+            return jsonify({'mensagem': 'Senha atualizada com sucesso!'})
+        else:
+            return jsonify({'mensagem': 'Senha atual incorreta!'}), 401
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao atualizar a senha: {err}")
+        return jsonify({'mensagem': 'Erro ao atualizar a senha.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Rota para servir arquivos estáticos da pasta assets
+@app.route('/assets/<path:filename>')
+def send_asset(filename):
+    return send_from_directory(os.path.join(app.root_path, 'assets'), filename)
+
+if __name__ == '__main__':
+    app.run(debug=True)
