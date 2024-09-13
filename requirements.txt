@@ -4,6 +4,7 @@ Flask-WTF
 Flask-SQLAlchemy
 Flask-Migrate
 mysqlclient
+pyjwt
 PyMySQL
 mysql-connector-python
 

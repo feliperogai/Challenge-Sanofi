@@ -12,15 +12,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             },
             body: JSON.stringify({ email, password })
         });
+
         const data = await response.json();
 
-        if (data.redirect) {
-            window.location.href = data.redirect;
+        if (response.ok) { // Verifica se a resposta HTTP foi bem-sucedida
+            if (data.redirect) {
+                console.log(`Redirecionando para: ${data.redirect}`);  // Log para depuração
+                window.location.href = data.redirect;  // Redireciona para a página do usuário/admin
+            } else {
+                alert(data.mensagem || 'Erro desconhecido.');
+            }
         } else {
             alert(data.mensagem || 'Erro desconhecido.');
         }
     } catch (error) {
-        console.error('Erro:', error);
+        console.error('Erro:', error);  // Log para depuração
         alert('Erro na comunicação com o servidor.');
     }
 });

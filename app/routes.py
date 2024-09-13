@@ -1,14 +1,17 @@
-from flask import render_template, request, jsonify, redirect, url_for, send_from_directory
+from flask import render_template, request, jsonify, redirect, url_for, send_from_directory, make_response
 import mysql.connector
-from mysql.connector import pooling
 import hashlib
+import jwt
+import datetime
 import uuid
-from flask_mail import Mail, Message
 import os
+from flask_mail import Mail, Message
 
+# Função para criptografar senha
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+# Função para obter conexão com o banco de dados
 def get_db_connection():
     db_config = {
         'user': 'admin',
@@ -17,16 +20,47 @@ def get_db_connection():
         'database': 'sistema_login'
     }
     try:
-        db_pool = mysql.connector.pooling.MySQLConnectionPool(
-            pool_name="mypool",
-            pool_size=5,
-            **db_config
-        )
-        return db_pool.get_connection()
+        conn = mysql.connector.connect(**db_config)
+        return conn
     except mysql.connector.Error as err:
         print(f"Erro ao obter conexão: {err}")
         return None
 
+# Função para codificar o token JWT
+def encode_auth_token(user_id):
+    try:
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            'iat': datetime.datetime.utcnow(),
+            'sub': user_id
+        }
+        return jwt.encode(payload, 'decode_auth_token', algorithm='HS256')
+    except Exception as e:
+        print(f"Erro ao gerar token: {e}")
+        return None
+
+# Função para decodificar o token JWT
+def decode_auth_token(auth_token):
+    try:
+        payload = jwt.decode(auth_token, 'decode_auth_token', algorithms=['HS256'])
+        return payload['sub']
+    except jwt.ExpiredSignatureError:
+        print("Token expirado. Faça login novamente.")  # Log para depuração
+        return 'Token expirado. Faça login novamente.'
+    except jwt.InvalidTokenError:
+        print("Token inválido. Faça login novamente.")  # Log para depuração
+        return 'Token inválido. Faça login novamente.'
+
+# Função para verificar se o usuário está autenticado e obter o ID do usuário
+def is_authenticated_and_get_user():
+    token = request.cookies.get('authToken')
+    if token:
+        user_id = decode_auth_token(token)
+        if not isinstance(user_id, str):  # Se não for uma string de erro, o token é válido
+            return user_id
+    return None
+
+# Função para configurar as rotas
 def configure_routes(app):
     mail = Mail(app)
 
@@ -44,7 +78,10 @@ def configure_routes(app):
 
     @app.route('/user-settings')
     def user_settings():
-        return render_template('user_settings.html')
+        user_id = is_authenticated_and_get_user()
+        if user_id:
+            return render_template('user_settings.html')
+        return redirect(url_for('index'))
 
     @app.route('/forgot-password')
     def forgot_password():
@@ -59,19 +96,46 @@ def configure_routes(app):
 
     @app.route('/user')
     def user():
-        email = request.args.get('email')
-        nome = request.args.get('nome')
-        if email and nome:
-            return render_template('user.html', email=email, nome=nome)
+        user_id = is_authenticated_and_get_user()
+        if user_id:
+            conn = get_db_connection()
+            if conn:
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT email, nome_usuario FROM usuarios WHERE id = %s", (user_id,))
+                    user = cursor.fetchone()
+                    if user:
+                        email, nome = user
+                        return render_template('user.html', email=email, nome=nome)
+                finally:
+                    conn.close()
         return redirect(url_for('index'))
 
     @app.route('/admin')
     def admin():
-        email = request.args.get('email')
-        nome = request.args.get('nome')
-        if email and nome:
-            return render_template('admin.html', email=email, nome=nome)
+        user_id = is_authenticated_and_get_user()  # Verifica se o usuário está autenticado
+        if user_id:  # Se estiver autenticado, continua
+            conn = get_db_connection()
+            if conn:
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT email, nome_usuario, tipo_usuario FROM usuarios WHERE id = %s", (user_id,))
+                    user = cursor.fetchone()
+                    if user:
+                        email, nome, tipo_usuario = user
+                        if tipo_usuario == 'admin':
+                            return render_template('admin.html', email=email, nome=nome)
+                finally:
+                    conn.close()
+        # Se não estiver autenticado, redireciona para a página de login
         return redirect(url_for('index'))
+
+
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        resp = make_response(redirect(url_for('index')))
+        resp.set_cookie('authToken', '', expires=0, httponly=True, secure=True)
+        return resp
 
     @app.route('/register', methods=['POST'])
     def register_user():
@@ -89,7 +153,6 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-
             cursor.execute("SELECT email FROM usuarios WHERE email = %s", (email,))
             existing_user = cursor.fetchone()
             if existing_user:
@@ -99,7 +162,6 @@ def configure_routes(app):
                 INSERT INTO usuarios (nome_usuario, email, senha)
                 VALUES (%s, %s, %s)
             """, (nome_usuario, email, senha))
-
             conn.commit()
             return jsonify({'mensagem': 'Usuário cadastrado com sucesso!'})
 
@@ -126,22 +188,24 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-
-            cursor.execute("SELECT nome_usuario, tipo_usuario FROM usuarios WHERE email = %s AND senha = %s", (email, senha))
+            cursor.execute("SELECT id, nome_usuario, tipo_usuario FROM usuarios WHERE email = %s AND senha = %s", (email, senha))
             user = cursor.fetchone()
-
             if user:
-                nome_usuario, tipo_usuario = user
-                if tipo_usuario == 'admin':
-                    redirect_url = url_for('admin', email=email, nome=nome_usuario)
-                else:
-                    redirect_url = url_for('user', email=email, nome=nome_usuario)
-                return jsonify({'redirect': redirect_url})
-
+                user_id, nome_usuario, tipo_usuario = user
+                token = encode_auth_token(user_id)
+                if token:
+                    redirect_url = url_for('admin' if tipo_usuario == 'admin' else 'user')
+                    print(f"Usuário autenticado com sucesso. Redirecionando para: {redirect_url}")  # Log para depuração
+                    resp = make_response(jsonify({'redirect': redirect_url}))
+                    resp.set_cookie('authToken', token, httponly=True)  # Lembre-se de remover `secure=True` se estiver em ambiente de desenvolvimento local
+                    return resp
+                return jsonify({'mensagem': 'Erro ao gerar o token.'}), 500
+            else:
+                print("Email ou senha incorretos.")  # Log para depuração
             return jsonify({'mensagem': 'Email ou senha incorretos.'}), 401
 
         except mysql.connector.Error as err:
-            print(f"Erro ao autenticar o usuário: {err}")
+            print(f"Erro ao autenticar o usuário: {err}")  # Log para depuração
             return jsonify({'mensagem': 'Erro ao autenticar o usuário.'}), 500
 
         finally:
@@ -163,15 +227,12 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-
             cursor.execute("UPDATE usuarios SET nome_usuario = %s WHERE email = %s", (new_name, email))
             conn.commit()
-
             return jsonify({'mensagem': 'Nome de usuário atualizado com sucesso!'})
 
         except mysql.connector.Error as err:
-            print(f"Erro ao atualizar o nome de usuário: {err}")
-            return jsonify({'mensagem': 'Erro ao atualizar o nome.'}), 500
+            return jsonify({'mensagem': f'Erro ao atualizar o nome de usuário: {err}'}), 500
 
         finally:
             cursor.close()
@@ -193,10 +254,8 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-
             cursor.execute("SELECT senha FROM usuarios WHERE email = %s", (email,))
             stored_password = cursor.fetchone()
-
             if stored_password and stored_password[0] == current_password:
                 cursor.execute("UPDATE usuarios SET senha = %s WHERE email = %s", (new_password, email))
                 conn.commit()
@@ -205,8 +264,7 @@ def configure_routes(app):
                 return jsonify({'mensagem': 'Senha atual incorreta!'}), 401
 
         except mysql.connector.Error as err:
-            print(f"Erro ao atualizar a senha: {err}")
-            return jsonify({'mensagem': 'Erro ao atualizar a senha.'}), 500
+            return jsonify({'mensagem': f'Erro ao atualizar a senha: {err}'}), 500
 
         finally:
             cursor.close()
@@ -226,31 +284,24 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-
             cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
             user = cursor.fetchone()
-
             if user:
                 user_id = user[0]
                 token = str(uuid.uuid4())
-                
                 cursor.execute("INSERT INTO reset_tokens (user_id, token) VALUES (%s, %s)", (user_id, token))
                 conn.commit()
-
                 reset_link = f"http://localhost:5000/reset-password?token={token}"
                 msg = Message('Redefinição de Senha',
                               sender='your_email@example.com',
                               recipients=[email])
                 msg.body = f'Clique no link para redefinir sua senha: {reset_link}'
                 mail.send(msg)
-                
                 return jsonify({'mensagem': 'Instruções para redefinir a senha foram enviadas por e-mail.'})
-
             return jsonify({'mensagem': 'E-mail não encontrado.'}), 404
 
         except mysql.connector.Error as err:
-            print(f"Erro ao enviar o e-mail: {err}")
-            return jsonify({'mensagem': 'Erro ao enviar o e-mail.'}), 500
+            return jsonify({'mensagem': f'Erro ao enviar o e-mail: {err}'}), 500
 
         finally:
             cursor.close()
@@ -271,27 +322,20 @@ def configure_routes(app):
 
         try:
             cursor = conn.cursor()
-            
             cursor.execute("SELECT user_id FROM reset_tokens WHERE token = %s", (token,))
             token_data = cursor.fetchone()
-
             if token_data:
                 user_id = token_data[0]
                 hashed_password = hash_password(new_password)
-                
                 cursor.execute("UPDATE usuarios SET senha = %s WHERE id = %s", (hashed_password, user_id))
                 conn.commit()
-
                 cursor.execute("DELETE FROM reset_tokens WHERE token = %s", (token,))
                 conn.commit()
-                
                 return jsonify({'mensagem': 'Senha atualizada com sucesso!'})
-
             return jsonify({'mensagem': 'Token inválido.'}), 400
 
         except mysql.connector.Error as err:
-            print(f"Erro ao atualizar a senha: {err}")
-            return jsonify({'mensagem': 'Erro ao atualizar a senha.'}), 500
+            return jsonify({'mensagem': f'Erro ao atualizar a senha: {err}'}), 500
 
         finally:
             cursor.close()
@@ -299,4 +343,14 @@ def configure_routes(app):
 
     @app.route('/static/<path:filename>')
     def send_asset(filename):
-        return send_from_directory(os.path.join(app.root_path, 'app/static'), filename)
+        return send_from_directory(os.path.join(app.root_path, 'static'), filename)
+
+    @app.route('/check-auth', methods=['GET'])
+    def check_auth():
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            token = auth_header.split(" ")[1]
+            user_id = decode_auth_token(token)
+            if not isinstance(user_id, str):  # Se for um ID válido (número), o token é válido
+                return jsonify({'message': 'Autenticado com sucesso!'}), 200
+        return jsonify({'message': 'Não autenticado!'}), 401

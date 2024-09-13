@@ -1,7 +1,8 @@
 import os
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'sanofi12345'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'decode_auth_token'
+    SESSION_COOKIE_NAME = 'session_cookie'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql+pymysql://admin:sanofi12345@database-sanofi.ctg4cskwkes6.us-east-1.rds.amazonaws.com/sistema_login'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = 'sandbox.smtp.mailtrap.io'
