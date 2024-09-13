@@ -3,6 +3,8 @@ Flask-Mail
 Flask-WTF
 Flask-SQLAlchemy
 Flask-Migrate
+mysqlclient
+PyMySQL
 mysql-connector-python
 
 

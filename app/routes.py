@@ -11,9 +11,9 @@ def hash_password(password):
 
 def get_db_connection():
     db_config = {
-        'user': 'root',
-        'password': '010403',
-        'host': 'localhost',
+        'user': 'admin',
+        'password': 'sanofi12345',
+        'host': 'database-sanofi.ctg4cskwkes6.us-east-1.rds.amazonaws.com',
         'database': 'sistema_login'
     }
     try:
@@ -212,7 +212,7 @@ def configure_routes(app):
             cursor.close()
             conn.close()
 
-    @app.route('/reset-password-request', methods=['POST'])
+    @app.route('/forgot-password', methods=['POST'])
     def reset_password_request():
         data = request.json
         email = data.get('email')
@@ -256,7 +256,7 @@ def configure_routes(app):
             cursor.close()
             conn.close()
 
-    @app.route('/update-password', methods=['POST'])
+    @app.route('/reset-password', methods=['POST'])
     def update_password():
         data = request.json
         token = data.get('token')
