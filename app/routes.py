@@ -70,35 +70,120 @@ def configure_routes(app):
     @app.route('/')
     def index():
         return render_template('index.html')
+    
+    @app.route('/check')
+    def check():
+        return render_template('check.html')
+    
+    @app.route('/user-settings', methods=['GET', 'POST'])
+    def user_settings():
+        user_id = is_authenticated_and_get_user()
+        if not user_id:
+            return redirect(url_for('index'))
+
+        conn = get_db_connection()
+        if conn is None:
+            flash('Erro ao conectar ao banco de dados.', 'danger')
+            return redirect(url_for('index'))
+
+        if request.method == 'POST':
+            if 'update-name' in request.form:
+                new_name = request.form.get('new-name')
+                if not new_name:
+                    return jsonify({'message': 'O nome não pode estar vazio.', 'status': 'error'})
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE usuarios SET nome_usuario = %s WHERE id = %s", (new_name, user_id))
+                    conn.commit()
+                    return jsonify({'message': 'Nome de usuário atualizado com sucesso!', 'status': 'success'})
+                except mysql.connector.Error as err:
+                    return jsonify({'message': f'Erro ao atualizar nome: {err}', 'status': 'error'})
+                finally:
+                    cursor.close()
+
+            elif 'update-password' in request.form:
+                current_password = request.form.get('current-password')
+                new_password = request.form.get('new-password')
+
+                if not current_password or not new_password:
+                    return jsonify({'message': 'Senha atual e nova senha são obrigatórias.', 'status': 'error'})
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT senha FROM usuarios WHERE id = %s", (user_id,))
+                    stored_password = cursor.fetchone()[0]
+
+                    if check_password(stored_password, current_password):
+                        hashed_password = hash_password(new_password)
+                        cursor.execute("UPDATE usuarios SET senha = %s WHERE id = %s", (hashed_password, user_id))
+                        conn.commit()
+
+                        # Atualiza o token JWT para manter o usuário autenticado
+                        token = encode_auth_token(user_id)
+                        if token:
+                            resp = make_response(jsonify({'message': 'Senha atualizada com sucesso!', 'status': 'success'}))
+                            resp.set_cookie('authToken', token, httponly=True, secure=True)
+                            return resp
+
+                        return jsonify({'message': 'Senha atualizada com sucesso!', 'status': 'success'})
+                    else:
+                        return jsonify({'message': 'Senha atual incorreta.', 'status': 'error'})
+                except mysql.connector.Error as err:
+                    return jsonify({'message': f'Erro ao atualizar senha: {err}', 'status': 'error'})
+                finally:
+                    cursor.close()
+
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT nome_usuario, email, tipo_usuario FROM usuarios WHERE id = %s", (user_id,))
+            user_info = cursor.fetchone()
+            if user_info:
+                nome_usuario, email, tipo_usuario = user_info
+                return render_template('user_settings.html', nome=nome_usuario, email=email, user_type=tipo_usuario)
+            else:
+                flash('Erro ao carregar informações do usuário.', 'danger')
+                return redirect(url_for('index'))
+        except mysql.connector.Error as err:
+            flash(f'Erro ao obter informações do usuário: {err}', 'danger')
+            return redirect(url_for('index'))
+        finally:
+            cursor.close()
+            conn.close()
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
+            # Obtém os dados do formulário
             data = request.json
             nome_usuario = data.get('name')
             email = data.get('email')
             senha = hash_password(data.get('password'))
 
+            # Valida os dados
             if not nome_usuario or not email or not senha:
                 return jsonify({'mensagem': 'Dados inválidos!'}), 400
 
+            # Conecta ao banco de dados
             conn = get_db_connection()
             if conn is None:
                 return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
 
             try:
                 cursor = conn.cursor()
+                # Verifica se o e-mail já está cadastrado
                 cursor.execute("SELECT email FROM usuarios WHERE email = %s", (email,))
                 existing_user = cursor.fetchone()
                 if existing_user:
                     return jsonify({'mensagem': 'E-mail já cadastrado!'}), 400
 
+                # Insere o novo usuário
                 cursor.execute(""" 
                     INSERT INTO usuarios (nome_usuario, email, senha)
                     VALUES (%s, %s, %s)
                 """, (nome_usuario, email, senha))
                 conn.commit()
-                return jsonify({'mensagem': 'Usuário cadastrado com sucesso!'})
+                
+                # Redireciona para a página de login com mensagem de sucesso
+                return jsonify({'mensagem': 'Usuário cadastrado com sucesso!', 'redirect': url_for('index')})
 
             except mysql.connector.Error as err:
                 print(f"Erro ao registrar o usuário: {err}")
@@ -107,8 +192,9 @@ def configure_routes(app):
             finally:
                 cursor.close()
                 conn.close()
-        else:
-            return render_template('register.html')
+
+        # Renderiza a página de registro para GET requests
+        return render_template('register.html')
 
     @app.route('/forgot-password', methods=['GET', 'POST'])
     def forgot_password_page():

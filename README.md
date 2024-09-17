@@ -56,5 +56,3 @@ Para configurar e executar o projeto localmente, siga estas etapas:
     python run.py
 
 
-
-

@@ -31,33 +31,32 @@ header {
     left: 0;
     width: 100%;
     height: 80px;
-    background: var(--card-background);
-    color: var(--text-color-dark);
+    background: #ffffff;
+    color: #333;
     padding: 0 20px;
     display: flex;
     align-items: center;
-    box-shadow: 0 4px 8px var(--card-shadow);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     box-sizing: border-box;
-    justify-content: space-between; /* Alinha os itens do header */
-    flex-wrap: wrap; /* Garante que os itens do header possam quebrar em múltiplas linhas se necessário */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que o conteúdo quebre para a linha de baixo se necessário */
 }
 
 header img {
     height: 60px;
-    width: auto;
     margin-right: 20px;
 }
 
-/* Título do header */
 header h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: normal;
-    flex: 2; /* Permite que o título ocupe o espaço restante */
-    text-align: left;
 }
-
 /* Menu de ícone */
 .menu-icon {
     display: flex;

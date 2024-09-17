@@ -113,8 +113,12 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.mensagem) {
-                        alert(data.mensagem); // Exibe a mensagem retornada pelo servidor
+                    if (data.redirect) {
+                        // Redireciona para a página de login
+                        window.location.href = data.redirect;
+                    } else if (data.mensagem) {
+                        // Exibe a mensagem retornada pelo servidor
+                        alert(data.mensagem);
                     }
                 })
                 .catch(error => {

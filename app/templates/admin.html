@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../static/css/admin.css">
     <link rel="icon" href="../static/images/icon.jpg">
     <script src="/static/js/auth.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -21,18 +22,17 @@
         </div>
     </header>
 
-    <div id="side-menu">
+    <div id="side-menu" class="side-menu">
         <button class="closebtn" onclick="closeMenu()">&times;</button>
         <div class="user-info">
-            <p><strong>Administrador</strong></p>
-            <p>admin@sanofi.com.br</p>
+            <p><strong id="user-nome">{{ nome }}</strong></p>
+            <p id="user-email">{{ email }}</p>
         </div>
         <a href="/user-settings">Configurações da Conta</a>
         <a href="/" onclick="logout()">Sair</a>
     </div>
 
     <div class="container">
-
         <section id="cadastrar-treinamento" class="form-section">
             <h2>Cadastrar Treinamento</h2>
             <form id="form-novo-treinamento">
@@ -61,9 +61,11 @@
                 </div>
                 <div class="form-group">
                     <label for="arquivo">Arquivo:</label>
-                    <input type="file" id="arquivo" required>
+                    <input type="file" id="arquivo">
                 </div>
-                <div class="form-button"><button type="submit" id="add">Adicionar</button></div>
+                <div class="form-button">
+                    <button type="submit" id="add">Adicionar</button>
+                </div>
                 <p id="confirmation-message" class="confirmation-message"></p>
             </form>
             <table id="tabela-treinamentos">
@@ -77,8 +79,7 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
             </table>
             <div id="treinamentos-tabela-pagination" class="pagination-controls">
                 <button id="prev-tabela" disabled>Anterior</button>
@@ -92,14 +93,16 @@
         </section>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../static/js/admin.js"></script>
     <script src="/static/js/logout.js"></script>
     <script>
+        // Função para exibir o menu lateral
         function toggleMenu() {
-            document.getElementById('side-menu').style.width = '250px';
+            const sideMenu = document.getElementById('side-menu');
+            sideMenu.style.width = sideMenu.style.width === '250px' ? '0' : '250px';
         }
 
+        // Função para fechar o menu lateral
         function closeMenu() {
             document.getElementById('side-menu').style.width = '0';
         }
@@ -110,16 +113,23 @@
             return urlParams.get(param);
         }
 
-        // Captura o e-mail e o nome da URL e exibe no menu
-        const userEmail = getQueryParam('email');
-        const userNome = getQueryParam('nome'); // Supondo que o nome também foi passado na URL
+        // Atualiza as informações do usuário no menu lateral
+        function updateUserInfo() {
+            const userEmail = '{{ email }}';
+            const userNome = '{{ nome }}';
 
-        if (userEmail) {
-            document.getElementById('user-email').textContent = userEmail;
+            if (userEmail) {
+                document.getElementById('user-email').textContent = userEmail;
+            }
+            if (userNome) {
+                document.getElementById('user-nome').textContent = userNome;
+            }
         }
-        if (userNome) {
-            document.getElementById('user-nome').textContent = userNome;
-        }
+
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserInfo();
+        });
     </script>
 </body>
 </html>

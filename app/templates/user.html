@@ -16,15 +16,17 @@
             <div></div>
             <div></div>
         </div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo da Empresa">
-        <h1>Acompanhamento de Treinamento</h1>
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
+            <h1>Controle de Treinamento</h1>
+        </div>
     </header>
 
-    <div id="side-menu">
+    <div id="side-menu" class="side-menu">
         <button class="closebtn" onclick="closeMenu()">&times;</button>
         <div class="user-info">
-            <p><strong><span id="user-nome">Nome do Usuário</span></strong> </p>
-            <p><strong><span id="user-email">user@sanofi.com.br</span></strong></p>
+            <p><strong id="user-nome">{{ nome }}</strong></p>
+            <p id="user-email">{{ email }}</p>
         </div>
         <a href="/user-settings">Configurações da Conta</a>
         <a href="/" onclick="logout()">Sair</a>
@@ -48,10 +50,13 @@
     <script src="../static/js/user.js"></script>
     <script src="/static/js/logout.js"></script>
     <script>
-        function toggleMenu() {
-            document.getElementById('side-menu').style.width = '250px';
+         // Função para exibir o menu lateral
+         function toggleMenu() {
+            const sideMenu = document.getElementById('side-menu');
+            sideMenu.style.width = sideMenu.style.width === '250px' ? '0' : '250px';
         }
 
+        // Função para fechar o menu lateral
         function closeMenu() {
             document.getElementById('side-menu').style.width = '0';
         }
@@ -62,16 +67,23 @@
             return urlParams.get(param);
         }
 
-        // Captura o e-mail e o nome da URL e exibe no menu
-        const userEmail = getQueryParam('email');
-        const userNome = getQueryParam('nome'); // Supondo que o nome também foi passado na URL
+        // Atualiza as informações do usuário no menu lateral
+        function updateUserInfo() {
+            const userEmail = '{{ email }}';
+            const userNome = '{{ nome }}';
 
-        if (userEmail) {
-            document.getElementById('user-email').textContent = userEmail;
+            if (userEmail) {
+                document.getElementById('user-email').textContent = userEmail;
+            }
+            if (userNome) {
+                document.getElementById('user-nome').textContent = userNome;
+            }
         }
-        if (userNome) {
-            document.getElementById('user-nome').textContent = userNome;
-        }
+
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserInfo();
+        });
     </script>
 </body>
 </html>

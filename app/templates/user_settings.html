@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="../static/css/user_settings.css">
     <link rel="icon" href="../static/images/icon.jpg">
     <script src="/static/js/auth.js" defer></script>
+    <style>
+        .feedback {
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -15,125 +31,177 @@
             <div></div>
             <div></div>
         </div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo da Empresa">
-        <h1>Configuração da Conta</h1>
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
+            <h1>Controle de Treinamento</h1>
+        </div>
     </header>
 
-    <div id="side-menu">
+    <!-- Área para exibir feedback -->
+    <div id="feedbackMessage" class="feedback"></div>
+
+    <div id="side-menu" class="side-menu">
         <button class="closebtn" onclick="closeMenu()">&times;</button>
         <div class="user-info">
-            <p><strong><span id="user-nome">Nome do Usuário</span></strong></p>
-            <p><strong><span id="user-email">user@sanofi.com.br</span></strong></p>
+            <p><strong id="user-nome">{{ nome }}</strong></p>
+            <p id="user-email">{{ email }}</p>
         </div>
+        <a href="/user-settings">Configurações da Conta</a>
         <a href="/" onclick="logout()">Sair</a>
     </div>
 
     <main>
         <div class="config-form">
             <h2>Atualizar Nome de Usuário</h2>
-            <form id="updateNomeForm">
+            <form id="updateNameForm" method="POST">
                 <label for="new-name">Novo Nome de Usuário:</label>
                 <input type="text" id="new-name" name="new-name" required>
-                <button type="submit">Atualizar Nome</button>
+                <button type="submit" name="update-name">Atualizar Nome</button>
             </form>
 
             <h2>Atualizar Senha</h2>
-            <form id="updateSenhaForm">
+            <form id="updatePasswordForm" method="POST">
                 <label for="current-password">Senha Atual:</label>
                 <input type="password" id="current-password" name="current-password" required>
                 
                 <label for="new-password">Nova Senha:</label>
                 <input type="password" id="new-password" name="new-password" required>
-                <button type="submit">Atualizar Senha</button>
+                <button type="submit" name="update-password">Atualizar Senha</button>
             </form>
 
             <!-- Botão de voltar -->
-            <button class="btn-back" onclick="window.history.back()">Voltar</button>
+            <a id="backButton" href="#"><button>Voltar</button></a>
+            
         </div>
     </main>
 
     <script>
-        // Funções de controle do menu lateral
+        // Função para exibir o menu lateral
         function toggleMenu() {
-            document.getElementById('side-menu').style.width = '250px';
+            const sideMenu = document.getElementById('side-menu');
+            sideMenu.style.width = sideMenu.style.width === '250px' ? '0' : '250px';
         }
-
+    
+        // Função para fechar o menu lateral
         function closeMenu() {
             document.getElementById('side-menu').style.width = '0';
         }
-
-        // Função para capturar parâmetros da URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+    
+        // Atualiza as informações do usuário no menu lateral
+        function updateUserInfo() {
+            const userEmail = '{{ email }}';
+            const userNome = '{{ nome }}';
+    
+            if (userEmail) {
+                document.getElementById('user-email').textContent = userEmail;
+            }
+            if (userNome) {
+                document.getElementById('user-nome').textContent = userNome;
+            }
         }
-
-        // Captura o e-mail e o nome da URL e exibe no menu
-        const userEmail = getQueryParam('email');
-        const userNome = getQueryParam('nome'); // Supondo que o nome também foi passado na URL
-
-        if (userEmail) {
-            document.getElementById('user-email').textContent = userEmail;
+    
+        // Configura o botão de voltar com base no tipo de usuário
+        function configureBackButton(userType) {
+            const backButton = document.getElementById('backButton');
+            if (userType === 'admin') {
+                backButton.href = '/admin';
+            } else {
+                backButton.href = '/user'; // Supondo que 'user' seja a página para usuários regulares
+            }
         }
-        if (userNome) {
-            document.getElementById('user-nome').textContent = userNome;
+    
+        // Exibe uma mensagem de feedback
+        function displayFeedback(message, type) {
+            const feedbackElement = document.getElementById('feedbackMessage');
+            feedbackElement.textContent = message;
+            feedbackElement.className = `feedback ${type}`;
+            feedbackElement.style.display = 'block';
         }
-
-        // Função para sair e limpar os dados do usuário
-        function logout() {
-            // Redireciona para a página de login ou outra desejada
-            window.location.href = '/index.html';
-        }
-
-        // Função para atualizar o nome de usuário
-        document.getElementById('updateNomeForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Evita o envio do formulário
-
+    
+        // Envia uma solicitação para atualizar o nome de usuário
+        function updateUserName(event) {
+            event.preventDefault();
             const newName = document.getElementById('new-name').value;
-
-            fetch('/update-nome', {
+    
+            if (!newName) {
+                displayFeedback('O nome não pode estar vazio.', 'error');
+                return;
+            }
+    
+            fetch('/user-settings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: userEmail, // Email do usuário para identificar
-                    new_name: newName
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'update-name': 'true',
+                    'new-name': newName
                 })
             })
-            .then(response => response.json())
+            .then(response => response.json()) // Processa a resposta como JSON
             .then(data => {
-                alert(data.mensagem);
+                displayFeedback(data.message, data.status);
+                if (data.status === 'success') {
+                    setTimeout(() => {
+                        window.location.reload(); // Recarrega a página após 1,5 segundos
+                    }, 1500);
+                }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao atualizar o nome.');
+                displayFeedback('Erro ao atualizar o nome de usuário: ' + error.message, 'error');
             });
-        });
-
-        // Função para atualizar a senha
-        document.getElementById('updateSenhaForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Evita o envio do formulário
-
+        }
+    
+        // Envia uma solicitação para atualizar a senha do usuário
+        function updateUserPassword(event) {
+            event.preventDefault();
             const currentPassword = document.getElementById('current-password').value;
             const newPassword = document.getElementById('new-password').value;
-
-            fetch('/update-senha', {
+    
+            if (!currentPassword || !newPassword) {
+                displayFeedback('Senha atual e nova senha são obrigatórias.', 'error');
+                return;
+            }
+    
+            fetch('/user-settings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: userEmail, // Email do usuário para identificar
-                    current_password: currentPassword,
-                    new_password: newPassword
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'update-password': 'true',
+                    'current-password': currentPassword,
+                    'new-password': newPassword
                 })
             })
-            .then(response => response.json())
+            .then(response => response.json()) // Processa a resposta como JSON
             .then(data => {
-                alert(data.mensagem);
+                displayFeedback(data.message, data.status);
+                if (data.status === 'success') {
+                    setTimeout(() => {
+                        window.location.reload(); // Recarrega a página após 1,5 segundos
+                    }, 1500);
+                }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao atualizar a senha.');
+                displayFeedback('Erro ao atualizar a senha: ' + error.message, 'error');
             });
+        }
+    
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserInfo();
+    
+            // Adiciona os ouvintes de eventos para os formulários
+            document.getElementById('updateNameForm').addEventListener('submit', updateUserName);
+            document.getElementById('updatePasswordForm').addEventListener('submit', updateUserPassword);
+            
+            // Configura o botão de voltar com base no tipo de usuário
+            const userType = '{{ user_type }}';
+            configureBackButton(userType);
         });
-    </script>
+    </script>    
 </body>
 </html>
