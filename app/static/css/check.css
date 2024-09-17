@@ -34,7 +34,7 @@ label {
 }
 
 input {
-    width: 100%; /* Ajuste para 100% para garantir a responsividade */
+    width: 95%; /* Ajuste para 100% para garantir a responsividade */
     padding: 10px; /* Ajustado para melhor usabilidade */
     margin-bottom: 10px;
     border: 1px solid #ddd;

@@ -1,0 +1,46 @@
+# Python bytecode
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ambiente virtual
+venv/
+ENV/
+env/
+.venv/
+
+# Arquivos de configuração sensíveis
+.env
+instance/config.py
+
+# Arquivos de logs
+*.log
+
+# Diretórios de cache de testes
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.coverage
+*.cover
+
+# Ferramentas de build e dependências
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+
+# Configurações de IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos temporários do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de cache de editores
+*.swp
+*~

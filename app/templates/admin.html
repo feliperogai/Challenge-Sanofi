@@ -103,6 +103,23 @@
         function closeMenu() {
             document.getElementById('side-menu').style.width = '0';
         }
+
+        // Função para capturar parâmetros da URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Captura o e-mail e o nome da URL e exibe no menu
+        const userEmail = getQueryParam('email');
+        const userNome = getQueryParam('nome'); // Supondo que o nome também foi passado na URL
+
+        if (userEmail) {
+            document.getElementById('user-email').textContent = userEmail;
+        }
+        if (userNome) {
+            document.getElementById('user-nome').textContent = userNome;
+        }
     </script>
 </body>
 </html>
