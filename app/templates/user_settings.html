@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanofi - Configuração do Usuário</title>
+    <title>Sanofi - Configuração de Usuário</title>
     <link rel="stylesheet" href="../static/css/user_settings.css">
     <link rel="icon" href="../static/images/icon.jpg">
     <script src="/static/js/auth.js" defer></script>
@@ -33,7 +33,7 @@
         </div>
         <div class="header-container">
             <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
-            <h1>Controle de Treinamento</h1>
+            <h1>Configuração de Usuário</h1>
         </div>
     </header>
 
@@ -46,8 +46,7 @@
             <p><strong id="user-nome">{{ nome }}</strong></p>
             <p id="user-email">{{ email }}</p>
         </div>
-        <a href="/user-settings">Configurações da Conta</a>
-        <a href="/" onclick="logout()">Sair</a>
+        <a href="/" onclick="logout()">Logout</a>
     </div>
 
     <main>
@@ -75,6 +74,7 @@
         </div>
     </main>
 
+    <script src="/static/js/logout.js"></script>
     <script>
         // Função para exibir o menu lateral
         function toggleMenu() {

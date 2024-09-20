@@ -75,6 +75,55 @@ def configure_routes(app):
     def check():
         return render_template('check.html')
     
+    @app.route('/admin-management')
+    def admin_management():
+        user_id = is_authenticated_and_get_user()
+        if user_id:
+            conn = get_db_connection()
+            if conn:
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT email, nome_usuario, tipo_usuario FROM usuarios WHERE id = %s", (user_id,))
+                    user = cursor.fetchone()
+                    if user:
+                        email, nome, tipo_usuario = user
+                        if tipo_usuario == 'admin':
+                            return render_template('admin_management.html', email=email, nome=nome)
+                finally:
+                    conn.close()
+        return redirect(url_for('index'))
+    
+    @app.route('/api/users')
+    def get_users():
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute('SELECT id, nome_usuario AS nome, email, tipo_usuario AS tipo FROM usuarios')
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(users)
+
+    @app.route('/api/user-settings', methods=['POST'])
+    def manage_user_settings():
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        user_id = request.form.get('user-id')
+
+        if 'change-user-type' in request.form:
+            new_type = request.form.get('new-type')
+            cursor.execute('UPDATE usuarios SET tipo_usuario = %s WHERE id = %s', (new_type, user_id))
+            conn.commit()
+            response = {'status': 'success', 'message': 'Tipo de usuário alterado com sucesso!'}
+
+        elif 'delete-user' in request.form:
+            cursor.execute('DELETE FROM usuarios WHERE id = %s', (user_id,))
+            conn.commit()
+            response = {'status': 'success', 'message': 'Usuário excluído com sucesso!'}
+
+        cursor.close()
+        conn.close()
+        return jsonify(response)
+
     @app.route('/user-settings', methods=['GET', 'POST'])
     def user_settings():
         user_id = is_authenticated_and_get_user()

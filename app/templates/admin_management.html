@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanofi - Gerenciamento de Acesso</title>
+    <link rel="icon" href="../static/images/icon.jpg">
+    <link rel="stylesheet" href="../static/css/admin_management.css">
+    <script src="/static/js/auth.js" defer></script>
+    <style>
+    </style>
+</head>
+<body>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
+            <h1>Gerenciamento de Acesso</h1>
+        </div>
+    </header>
+
+    <div id="side-menu" class="side-menu">
+        <button class="closebtn" onclick="closeMenu()">&times;</button>
+        <div class="user-info">
+            <p><strong id="user-nome">{{ nome }}</strong></p>
+            <p id="user-email">{{ email }}</p>
+        </div>
+        <a href="/admin">Dashboard</a>
+        <a href="/user-settings">User Settings</a>
+        <a href="/" onclick="logout()">Logout</a>
+    </div>
+
+    <main>
+        <div class="content-container">
+            <div id="feedbackMessage" class="feedback"></div>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os dados dos usuários serão inseridos aqui via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+    <script src="/static/js/logout.js"></script>
+    <script src="/static/js/admin_management.js" defer></script>
+</body>
+</html>
