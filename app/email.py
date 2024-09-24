@@ -16,7 +16,7 @@ def send_email(to, subject, template):
             subject=subject,
             recipients=[to],
             html=template,
-            sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'no-reply@sanofi.com')
+            sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'apenasenviando@gmail.com')
         )
         # Envia a mensagem
         mail.send(msg)

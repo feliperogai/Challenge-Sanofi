@@ -7,8 +7,6 @@
     <link rel="icon" href="../static/images/icon.jpg">
     <link rel="stylesheet" href="../static/css/admin_management.css">
     <script src="/static/js/auth.js" defer></script>
-    <style>
-    </style>
 </head>
 <body>
     <header>
@@ -43,7 +41,7 @@
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Email</th>
-                        <th>Tipo</th>
+                        <th>Permissão</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -52,8 +50,23 @@
                 </tbody>
             </table>
         </div>
+        <div id="loadingIndicator" class="loading" style="display: none;">Carregando...</div>
     </main>
-    
+
+    <!-- Modal para alterar tipo de usuário -->
+    <div id="userTypeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Alterar Permissão do Usuário</h2>
+            <p id="modal-user-name"></p>
+            <select id="newUserType">
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+            </select>
+            <button id="confirmChange" onclick="confirmChange()">Confirmar</button>
+        </div>
+    </div>
+
     <script src="/static/js/logout.js"></script>
     <script src="/static/js/admin_management.js" defer></script>
 </body>

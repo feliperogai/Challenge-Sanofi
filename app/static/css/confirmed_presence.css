@@ -9,7 +9,7 @@
 
 /* Estilo básico do corpo */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f4f4f4;
     color: #333;
     display: flex;
@@ -18,17 +18,25 @@ body {
     height: 100vh;
     margin: 0;
     padding: 20px;
+    transition: background-color 0.3s ease;
 }
 
 /* Container principal da confirmação */
 .confirmation-container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     padding: 20px;
     text-align: center;
     width: 80%;
     max-width: 600px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito de hover no container */
+.confirmation-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilo da imagem do logo */
@@ -42,13 +50,15 @@ body {
 /* Estilo do título */
 .confirmation-container h2 {
     margin-bottom: 15px;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    color: rgb(122, 0, 230);
 }
 
 /* Estilo do parágrafo */
 .confirmation-container p {
     font-size: 16px;
     margin-bottom: 20px;
+    line-height: 1.6;
 }
 
 /* Estilo dos links */
@@ -56,10 +66,27 @@ body {
     color: rgb(122, 0, 230);
     text-decoration: none;
     font-weight: bold;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.confirmation-options a::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: rgb(122, 0, 230);
+    transition: width 0.3s ease;
+    position: relative;
+    top: 5px;
 }
 
 .confirmation-options a:hover {
-    text-decoration: underline;
+    color: #1a1a1a;
+}
+
+.confirmation-options a:hover::after {
+    width: 100%;
 }
 
 /* Media Queries para responsividade */
@@ -72,7 +99,7 @@ body {
     }
 
     .confirmation-container h2 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
     }
 
     .confirmation-container p {
@@ -88,7 +115,7 @@ body {
     }
 
     .confirmation-container h2 {
-        font-size: 1.125rem;
+        font-size: 1.25rem;
     }
 
     .confirmation-container p {

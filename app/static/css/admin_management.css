@@ -21,7 +21,7 @@ body {
     color: var(--text-color-dark);
     background-color: var(--background-color);
     padding-top: 80px; /* Espaço para o cabeçalho fixo */
-    box-sizing: border-box; /* Garante que o padding seja considerado dentro do tamanho do box */
+    box-sizing: border-box;
 }
 
 /* Estilo do header */
@@ -39,25 +39,39 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     box-sizing: border-box;
+    transition: background 0.3s ease; /* Efeito de transição ao mudar o fundo */
 }
 
+header.scrolled {
+    background: rgba(255, 255, 255, 0.9); /* Fundo semi-transparente ao rolar */
+}
+
+/* Container do header */
 .header-container {
     display: flex;
     align-items: center;
-    flex-wrap: wrap; /* Permite que o conteúdo quebre para a linha de baixo se necessário */
+    flex-wrap: wrap;
 }
 
+/* Logo do header */
 header img {
     height: 60px;
     margin-right: 20px;
+    transition: transform 0.3s; /* Efeito ao interagir com a logo */
 }
 
+header img:hover {
+    transform: scale(1.05); /* Aumenta ligeiramente ao passar o mouse */
+}
+
+/* Título do header */
 header h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: normal;
 }
-/* Menu de ícone */
+
+/* Estilo do menu hamburguer */
 .menu-icon {
     display: flex;
     flex-direction: column;
@@ -66,15 +80,20 @@ header h1 {
     cursor: pointer;
     margin-right: 20px;
     position: relative;
-    z-index: 1100; /* Garantir que o ícone esteja acima da imagem */
+    z-index: 1100;
+    transition: transform 0.3s;
 }
 
-/* Estilo dos itens do menu hamburguer */
+.menu-icon:hover {
+    transform: scale(1.1);
+}
+
 .menu-icon div {
     width: 30px;
     height: 4px;
-    background-color: var(--text-color-dark);
+    background-color: #333;
     margin: 5px 0;
+    transition: background-color 0.3s;
 }
 
 /* Menu Lateral */
@@ -84,12 +103,17 @@ header h1 {
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--card-background);
-    color: var(--text-color-dark);
+    background-color: #ffffff;
+    color: #333;
     overflow-x: hidden;
     padding-top: 60px;
-    box-shadow: 2px 0 5px var(--card-shadow);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
     z-index: 1000;
+    transition: width 0.3s;
+}
+
+#side-menu.open {
+    width: 250px;
 }
 
 #side-menu .closebtn {
@@ -98,14 +122,20 @@ header h1 {
     right: 25px;
     font-size: 36px;
     color: #fff;
-    background-color: var(--primary-color);
+    background-color: rgb(122, 0, 230);
     cursor: pointer;
     border: none;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+#side-menu .closebtn:hover {
+    background-color: rgb(131, 1, 245);
 }
 
 #side-menu .user-info {
     padding: 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #ddd;
 }
 
 #side-menu .user-info p {
@@ -116,13 +146,14 @@ header h1 {
     padding: 10px 20px;
     text-decoration: none;
     font-size: 18px;
-    color: var(--primary-color);
+    color: rgb(122, 0, 230);
     display: block;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, padding-left 0.3s;
 }
 
 #side-menu a:hover {
     background-color: #f1f1f1;
+    padding-left: 30px;
 }
 
 .feedback {
@@ -145,44 +176,240 @@ header h1 {
     border: 1px solid #f5c6cb;
 }
 
-/* Adicione estilos adicionais conforme necessário */
+/* Estilos adicionais */
 table {
     width: 100%;
     border-collapse: collapse;
 }
+
 table, th, td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
 }
+
 th, td {
-    padding: 8px;
+    padding: 10px; /* Aumentado para um toque mais moderno */
     text-align: left;
 }
+
 th {
     background-color: #f4f4f4;
+    font-weight: bold;
 }
+
+/* Botões */
 .button {
     color: white;
     border: none;
-    padding: 6px 12px;
+    padding: 10px 16px; /* Aumentado para mais conforto */
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
+    font-size: 16px; /* Aumentado para melhor legibilidade */
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 8px; /* Bordas mais arredondadas */
+    transition: background-color 0.3s ease, transform 0.2s; /* Efeito de transformação */
 }
+
 .button-danger {
     background-color: #dc3545;
     font-weight: 700;
 }
+
 .button-danger:hover {
     background-color: #80111c;
+    transform: scale(1.05); /* Leve aumento ao passar o mouse */
 }
+
 .button-warning {
     background-color: #7a00e6;
     font-weight: 700;
 }
+
 .button-warning:hover {
     background-color: #8301f5;
-}        
+    transform: scale(1.05);
+}
+
+/* Estilo do modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1001; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.7); /* Escurecido para um efeito mais dramático */
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    margin: 10% auto; 
+    padding: 30px; /* Aumentado para um visual mais espaçoso */
+    border-radius: 12px; /* Bordas arredondadas */
+    box-shadow: 0 4px 30px var(--card-shadow); /* Sombra mais forte */
+    width: 90%; 
+    max-width: 400px;
+    position: relative;
+    animation: slideIn 0.5s ease; /* Animação de entrada */
+}
+
+.close {
+    color: var(--primary-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: rgb(131, 1, 245); /* Mudança de cor ao passar o mouse */
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1001; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.7); /* Escurecimento do fundo */
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    margin: 10% auto; 
+    padding: 20px;
+    border-radius: 12px; /* Bordas mais arredondadas */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra mais forte */
+    width: 90%; 
+    max-width: 500px; /* Largura máxima aumentada */
+    position: relative;
+    transition: transform 0.3s ease; /* Transição suave */
+    animation: slideIn 0.5s; /* Animação ao abrir */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close {
+    color: var(--primary-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal h2 {
+    color: var(--primary-color);
+    margin: 0 0 15px;
+}
+
+.modal select {
+    padding: 12px; /* Aumentado para conforto */
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Bordas arredondadas */
+    font-size: 1em;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: border-color 0.3s; /* Transição para foco */
+}
+
+.modal select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(122, 0, 230, 0.5); /* Sombra ao focar */
+}
+
+/* Botão do modal */
+.modal button {
+    padding: 12px; /* Aumentado para conforto */
+    background-color: var(--btn-background);
+    color: white;
+    border: none;
+    border-radius: 8px; /* Bordas arredondadas */
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s; /* Transições suaves */
+}
+
+.modal button:hover {
+    background-color: var(--btn-background-hover);
+    transform: translateY(-2px); /* Efeito de levitação ao passar o mouse */
+}
+
+/* Estilo para mensagens de erro no modal */
+.modal .error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+/* Carregando */
+.loading {
+    display: none;
+    text-align: center;
+    font-size: 20px;
+    margin: 20px 0;
+    color: #7a00e6;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 4px solid #7a00e6;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+/* Animações */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Nova animação para o modal */
+@keyframes slideIn {
+    from {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

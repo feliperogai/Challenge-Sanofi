@@ -7,6 +7,7 @@ import re
 import uuid
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.models import Usuario, Treinamento, UsuarioTreinamento
 from app.email import send_email
 
 # Função para criptografar senha
@@ -71,8 +72,44 @@ def configure_routes(app):
     def index():
         return render_template('index.html')
     
-    @app.route('/check')
+    # Rota para exibir o formulário
+    @app.route('/submit', methods=['GET', 'POST'])
     def check():
+        if request.method == 'POST':
+            nome = request.form.get('name')
+            email = request.form.get('email')
+            data_hora = request.form.get('date')
+            assinatura = request.form.get('signature')
+
+            # Validação dos dados do formulário (opcional)
+            if not nome or not email or not data_hora or not assinatura:
+                flash('Todos os campos são obrigatórios.', 'danger')
+                return redirect(url_for('check'))
+
+            # Conectar ao banco de dados
+            conn = get_db_connection()
+            if conn is None:
+                flash('Erro ao conectar ao banco de dados.', 'danger')
+                return redirect(url_for('check'))
+
+            try:
+                cursor = conn.cursor()
+                query = """
+                    INSERT INTO presenca (nome, email, data_hora, assinatura)
+                    VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(query, (nome, email, data_hora, assinatura))
+                conn.commit()
+                flash('Presença registrada com sucesso!', 'success')
+                return redirect(url_for('check'))
+            except mysql.connector.Error as err:
+                print(f"Erro ao inserir dados: {err}")
+                flash('Erro ao registrar presença. Tente novamente.', 'danger')
+                return redirect(url_for('check'))
+            finally:
+                cursor.close()
+                conn.close()
+        
         return render_template('check.html')
     
     @app.route('/admin-management')
@@ -419,6 +456,156 @@ def configure_routes(app):
                 finally:
                     conn.close()
         return redirect(url_for('index'))
+    
+    @app.route('/api/tickets', methods=['GET'])
+    def get_tickets():
+        page = request.args.get('page', default=0, type=int)
+        limit = 4
+        offset = page * limit
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT t.id, t.nome_treinamento, t.data_hora, t.link,
+                COUNT(u.id) as num_usuarios,
+                GROUP_CONCAT(u.nome_usuario) as usuarios
+            FROM treinamentos t
+            LEFT JOIN usuario_treinamento ut ON t.id = ut.treinamento_id
+            LEFT JOIN usuarios u ON ut.usuario_id = u.id
+            GROUP BY t.id
+            ORDER BY t.data_hora DESC
+            LIMIT %s OFFSET %s
+        """, (limit, offset))
+        
+        tickets = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Formatar dados para incluir data e horário separadamente
+        for ticket in tickets:
+            ticket['data'] = ticket['data_hora'].strftime('%Y-%m-%d')
+            ticket['time'] = ticket['data_hora'].strftime('%H:%M')
+            del ticket['data_hora']  # Remove o campo original
+
+        return jsonify(tickets)
+
+    @app.route('/api/tickets/<int:ticket_id>', methods=['GET'])
+    def get_ticket_details(ticket_id):
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT t.nome_treinamento, t.data_hora, t.link,
+                GROUP_CONCAT(u.nome_usuario) as usuarios
+            FROM treinamentos t
+            JOIN usuarios u ON t.usuario_id = u.id
+            WHERE t.id = %s
+            GROUP BY t.id
+        """, (ticket_id,))
+        ticket = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if ticket:
+            ticket['data'] = ticket['data_hora'].strftime('%Y-%m-%d')
+            ticket['time'] = ticket['data_hora'].strftime('%H:%M')
+            del ticket['data_hora']  # Remove o campo original
+            return jsonify(ticket)
+        else:
+            return jsonify({'mensagem': 'Ticket não encontrado.'}), 404
+
+    @app.route('/cadastrar-treinamento', methods=['GET', 'POST'])
+    def cadastrar_treinamento():
+        user_id = is_authenticated_and_get_user()
+        if not user_id:
+            return redirect(url_for('index'))
+
+        if request.method == 'POST':
+            data = request.json
+            usuario_ids = data.get('usuario_ids')
+            nome_treinamento = data.get('treinamento')
+            data_treinamento = data.get('data')
+            hora_treinamento = data.get('time')
+            link = data.get('link')
+
+            # Combina data e hora
+            data_hora = datetime.strptime(f"{data_treinamento} {hora_treinamento}", '%Y-%m-%d %H:%M')
+
+            conn = get_db_connection()
+            if conn is None:
+                return jsonify({'mensagem': 'Erro ao conectar ao banco de dados.'}), 500
+
+            try:
+                cursor = conn.cursor()
+                
+                # Verifica se já existe um treinamento com esses dados
+                cursor.execute("""
+                    SELECT id FROM treinamentos 
+                    WHERE nome_treinamento = %s AND data_hora = %s AND link = %s
+                """, (nome_treinamento, data_hora, link))
+                existing_training = cursor.fetchone()
+
+                if existing_training:
+                    # Se já existe, só adiciona os usuários
+                    treinamento_id = existing_training[0]
+                    for usuario_id in usuario_ids:
+                        cursor.execute("""
+                            INSERT INTO usuario_treinamento (usuario_id, treinamento_id)
+                            VALUES (%s, %s)
+                        """, (usuario_id, treinamento_id))
+                else:
+                    # Se não existe, cria um novo
+                    cursor.execute("""
+                        INSERT INTO treinamentos (usuario_id, nome_treinamento, data_hora, link)
+                        VALUES (%s, %s, %s, %s)
+                    """, (usuario_ids[0], nome_treinamento, data_hora, link))  # Insere o primeiro usuário
+                    treinamento_id = cursor.lastrowid
+                    
+                    # Insere os outros usuários
+                    for usuario_id in usuario_ids[1:]:
+                        cursor.execute("""
+                            INSERT INTO usuario_treinamento (usuario_id, treinamento_id)
+                            VALUES (%s, %s)
+                        """, (usuario_id, treinamento_id))
+
+                conn.commit()
+                return jsonify({'mensagem': 'Treinamento cadastrado com sucesso!'}), 201
+
+            except mysql.connector.Error as err:
+                print(f"Erro ao cadastrar o treinamento: {err}")
+                return jsonify({'mensagem': 'Erro ao cadastrar o treinamento.'}), 500
+
+            finally:
+                cursor.close()
+                conn.close()
+
+        return render_template('admin.html', user_id=user_id)
+    
+    @app.route('/api/progress', methods=['GET'])
+    def get_progress_data():
+        try:
+            # Consulta para buscar os dados de progresso dos usuários
+            users = Usuario.query.all()  # Assume que você tem um modelo Usuario
+            progress_data = []
+
+            for user in users:
+                # Buscando os treinamentos associados ao usuário
+                total_trainings = UsuarioTreinamento.query.filter_by(usuario_id=user.id).count()  # Total de treinamentos
+                completed_trainings = UsuarioTreinamento.query.join(Treinamento).filter(
+                    UsuarioTreinamento.usuario_id == user.id,
+                    Treinamento.presenca_confirmada == True
+                ).count()  # Concluídos
+                not_completed_trainings = total_trainings - completed_trainings  # Não concluídos
+
+                progress_data.append({
+                    'nome_usuario': user.nome_usuario,
+                    'treinamentos_concluidos': completed_trainings,
+                    'treinamentos_nao_concluidos': not_completed_trainings
+                })
+
+            return jsonify(progress_data), 200
+
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
     @app.route('/logout', methods=['POST'])
     def logout():

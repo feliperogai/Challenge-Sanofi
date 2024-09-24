@@ -1,249 +1,218 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const formCadastro = document.getElementById('form-cadastro');
-    const formNovoTreinamento = document.getElementById('form-novo-treinamento');
-    const formTreinamento = document.getElementById('form-treinamento');
-    const listaUsuarios = document.getElementById('lista-usuarios');
-    const tabelaTreinamentos = document.getElementById('tabela-treinamentos').getElementsByTagName('tbody')[0];
-    const usuarioSelect = document.getElementById('usuario');
-    const treinamentoSelect = document.getElementById('treinamento');
-    const ctx = document.getElementById('grafico-desempenho').getContext('2d');
-    const confirmationMessage = document.getElementById('confirmation-message');
+document.addEventListener('DOMContentLoaded', function () {
+    let currentPage = 0; // Página inicial
+    const ticketsPerPage = 4; // Ajuste para 4 tickets por página
+    let selectedUsers = [];
 
-    let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    let treinamentos = JSON.parse(localStorage.getItem('treinamentos')) || [];
-    let tiposTreinamento = JSON.parse(localStorage.getItem('tiposTreinamento')) || [];
+    // Carregar usuários ao iniciar
+    function loadUsers() {
+        fetch('/api/users')
+            .then(response => response.json())
+            .then(users => {
+                const usuarioList = document.getElementById('usuario-list');
+                usuarioList.innerHTML = ''; // Limpar a lista anterior
 
-    const usuariosPorPagina = 2;
-    const treinamentosPorPagina = 2;
-    const tabelaPorPagina = 5;
-    let paginaUsuarios = 0;
-    let paginaTreinamentos = 0;
-    let paginaTabela = 0;
+                users.forEach(user => {
+                    if (user.tipo === 'user') {
+                        const label = document.createElement('label');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.value = user.id; // Valor é o ID do usuário
 
-    function saveData() {
-        localStorage.setItem('usuarios', JSON.stringify(usuarios));
-        localStorage.setItem('treinamentos', JSON.stringify(treinamentos));
-        localStorage.setItem('tiposTreinamento', JSON.stringify(tiposTreinamento));
-    }
+                        // Adicionar evento para atualizar a seleção
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                selectedUsers.push(user);
+                            } else {
+                                selectedUsers = selectedUsers.filter(u => u.id !== user.id);
+                            }
+                            updateUserDisplay();
+                        });
 
-    function updateUsuarioSelect() {
-        usuarioSelect.innerHTML = '';
-        usuarios.forEach(usuario => {
-            const option = document.createElement('option');
-            option.value = usuario;
-            option.textContent = usuario;
-            usuarioSelect.appendChild(option);
-        });
-    }
-
-    function updateTreinamentoSelect() {
-        treinamentoSelect.innerHTML = '';
-        tiposTreinamento.forEach(treinamento => {
-            const option = document.createElement('option');
-            option.value = treinamento;
-            option.textContent = treinamento;
-            treinamentoSelect.appendChild(option);
-        });
-    }
-
-    function updateUsuarioList() {
-        const start = paginaUsuarios * usuariosPorPagina;
-        const end = start + usuariosPorPagina;
-        const usuariosPagina = usuarios.slice(start, end);
-
-        listaUsuarios.innerHTML = '';
-        usuariosPagina.forEach(usuario => {
-            const li = document.createElement('li');
-            li.textContent = usuario;
-            listaUsuarios.appendChild(li);
-        });
-
-        document.getElementById('prev-usuarios').disabled = paginaUsuarios === 0;
-        document.getElementById('next-usuarios').disabled = end >= usuarios.length;
-    }
-
-    function updateTabelaTreinamentos() {
-        const start = paginaTabela * tabelaPorPagina;
-        const end = start + tabelaPorPagina;
-        const treinamentosPagina = treinamentos.slice(start, end);
-
-        tabelaTreinamentos.innerHTML = '';
-
-        treinamentosPagina.forEach((treinamento, index) => {
-            const row = tabelaTreinamentos.insertRow();
-            const cellUsuario = row.insertCell();
-            const cellTreinamento = row.insertCell();
-            const cellData = row.insertCell();
-            const cellArquivo = row.insertCell();
-            const cellConcluido = row.insertCell();
-            const cellAcoes = row.insertCell(); // Coluna para ações (Excluir)
-
-            cellUsuario.textContent = treinamento.usuario;
-            cellTreinamento.textContent = treinamento.treinamento;
-            cellData.textContent = treinamento.data;
-            cellArquivo.innerHTML = treinamento.arquivo ? `<a href="${treinamento.arquivo}" target="_blank">Ver Arquivo</a>` : 'Nenhum Arquivo';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = treinamento.concluido;
-            checkbox.addEventListener('change', () => {
-                treinamento.concluido = checkbox.checked;
-                saveData();
-                updateTabelaTreinamentos();
-                updateGrafico();
-            });
-            cellConcluido.appendChild(checkbox);
-
-            // Botão de Excluir
-            const excluirBtn = document.createElement('button');
-            excluirBtn.textContent = 'Excluir';
-            excluirBtn.className = 'excluir-btn';
-            excluirBtn.addEventListener('click', () => {
-                treinamentos.splice(start + index, 1); // Remove o item da lista
-                saveData();
-                updateTabelaTreinamentos();
-                updateGrafico();
-            });
-            cellAcoes.appendChild(excluirBtn);
-        });
-
-        document.getElementById('prev-tabela').disabled = paginaTabela === 0;
-        document.getElementById('next-tabela').disabled = end >= treinamentos.length;
-    }
-
-    function updateGrafico() {
-        const labels = [...new Set(treinamentos.map(t => t.usuario))]; // Lista de usuários
-        const dadosConcluidos = labels.map(usuario => {
-            return treinamentos.filter(t => t.usuario === usuario && t.concluido).length;
-        });
-        const dadosNaoConcluidos = labels.map(usuario => {
-            return treinamentos.filter(t => t.usuario === usuario && !t.concluido).length;
-        });
-
-        if (window.graficoDesempenho) {
-            window.graficoDesempenho.destroy();
-        }
-
-        window.graficoDesempenho = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Concluído',
-                        data: dadosConcluidos,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Não Concluído',
-                        data: dadosNaoConcluidos,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
+                        label.appendChild(checkbox);
+                        label.appendChild(document.createTextNode(user.nome)); // Nome do usuário
+                        usuarioList.appendChild(label);
                     }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar usuários:', error);
+            });
     }
 
-    formCadastro.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nome = document.getElementById('nome').value;
+    // Atualizar exibição de usuários selecionados
+    function updateUserDisplay() {
+        const usuarioInput = document.getElementById('usuario');
+        usuarioInput.value = selectedUsers.length > 0 ? selectedUsers.map(u => u.nome).join(', ') : 'Selecione os usuários';
+    }
 
-        if (nome && !usuarios.includes(nome)) {
-            usuarios.push(nome);
-            saveData();
-            updateUsuarioSelect();
-            updateUsuarioList();
-            formCadastro.reset();
+    // Mostrar/ocultar a lista de usuários ao clicar
+    window.toggleUserSelection = function() {
+        const usuarioList = document.getElementById('usuario-list');
+        usuarioList.style.display = usuarioList.style.display === 'none' ? 'block' : 'none';
+    };
+
+    // Fechar a lista se clicar fora
+    document.addEventListener('click', function(event) {
+        const usuarioContainer = document.getElementById('usuario-container');
+        const usuarioList = document.getElementById('usuario-list');
+        if (!usuarioContainer.contains(event.target)) {
+            usuarioList.style.display = 'none';
         }
     });
 
-    formNovoTreinamento.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const novoTreinamento = document.getElementById('novo-treinamento').value;
+    // Carregar tickets
+    function loadTickets() {
+        fetch(`/api/tickets?page=${currentPage}&limit=${ticketsPerPage}`) // Adiciona limite à requisição
+            .then(response => response.json())
+            .then(tickets => {
+                const ticketsList = document.getElementById('tickets-container');
+                ticketsList.innerHTML = '';
 
-        if (novoTreinamento && !tiposTreinamento.includes(novoTreinamento)) {
-            tiposTreinamento.push(novoTreinamento);
-            saveData();
-            updateTreinamentoSelect();
-            formNovoTreinamento.reset();
-        }
-    });
+                tickets.forEach(ticket => {
+                    const ticketDiv = document.createElement('div');
+                    ticketDiv.classList.add('ticket');
+                    ticketDiv.innerHTML = `
+                        <h3>${ticket.nome_treinamento}</h3>
+                        <p>Usuários: ${ticket.num_usuarios}</p>
+                        <p>Data: ${formatDate(ticket.data)}</p>
+                        <p>Horário: ${ticket.time}</p>
+                        <a href="#" onclick="showTicketDetails(${ticket.id})">Ver Detalhes</a>
+                    `;
+                    ticketsList.appendChild(ticketDiv);
+                });
 
-    formTreinamento.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const usuario = usuarioSelect.value;
-        const treinamento = treinamentoSelect.value;
+                // Habilitar ou desabilitar botões de navegação
+                document.getElementById('prev-tickets').style.display = currentPage > 0 ? 'inline-block' : 'none';
+                document.getElementById('next-tickets').style.display = tickets.length < ticketsPerPage ? 'none' : 'inline-block';
+            })
+            .catch(error => {
+                console.error('Erro ao carregar tickets:', error);
+            });
+    }
+
+    // Formatar data para dd-mm-yyyy
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
+    // Enviar o formulário de cadastro de treinamento
+    document.getElementById('form-treinamento').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const treinamento = document.getElementById('treinamento').value;
         const data = document.getElementById('data').value;
-        const arquivoInput = document.getElementById('arquivo');
-        const arquivo = arquivoInput.files[0] ? URL.createObjectURL(arquivoInput.files[0]) : null;
+        const time = document.getElementById('time').value;
+        const link = document.getElementById('link').value;
 
-        if (usuario && treinamento && data) {
-            treinamentos.push({
-                usuario,
-                treinamento,
-                data,
-                arquivo,
-                concluido: false // Novo treinamento inicia como não concluído
+        fetch('/cadastrar-treinamento', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ usuario_ids: selectedUsers.map(u => u.id), treinamento, data, time, link }),
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao cadastrar o treinamento');
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('confirmation-message').textContent = data.mensagem;
+            document.getElementById('form-treinamento').reset();
+            selectedUsers = []; // Limpar seleção
+            updateUserDisplay(); // Atualiza exibição de usuários
+            loadTickets(); // Atualiza a lista de tickets
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('confirmation-message').textContent = 'Erro ao cadastrar o treinamento';
+        });
+    });
+
+    // Função para mostrar detalhes do ticket
+    window.showTicketDetails = function(ticketId) {
+        fetch(`/api/tickets/${ticketId}`)
+            .then(response => response.json())
+            .then(ticket => {
+                document.getElementById('modal-titulo').textContent = ticket.nome_treinamento;
+                document.getElementById('modal-usuarios').textContent = ticket.usuarios.join(', ');
+                document.getElementById('modal-data').textContent = formatDate(ticket.data);
+                document.getElementById('modal-horario').textContent = ticket.time;
+                const modalLink = document.getElementById('modal-link');
+                modalLink.href = ticket.link;
+                modalLink.textContent = 'Acessar treinamento';
+                document.getElementById('ticket-modal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Erro ao carregar detalhes do ticket:', error);
             });
-            saveData();
-            updateTabelaTreinamentos();
-            updateGrafico();
-            formTreinamento.reset();
+    };
 
-            // Mostrar mensagem de confirmação
-            confirmationMessage.textContent = 'Treinamento adicionado com sucesso!';
-            confirmationMessage.style.display = 'block';
+    // Função para fechar o modal
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('ticket-modal').style.display = 'none';
+    });
 
-            // Ocultar mensagem após 3 segundos
-            setTimeout(() => {
-                confirmationMessage.style.display = 'none';
-            }, 3000);
+    // Funções de paginação de tickets
+    document.getElementById('prev-tickets').addEventListener('click', function() {
+        if (currentPage > 0) {
+            currentPage--;
+            loadTickets();
         }
     });
 
-    document.getElementById('prev-usuarios').addEventListener('click', () => {
-        if (paginaUsuarios > 0) {
-            paginaUsuarios--;
-            updateUsuarioList();
-        }
+    document.getElementById('next-tickets').addEventListener('click', function() {
+        currentPage++;
+        loadTickets();
     });
 
-    document.getElementById('next-usuarios').addEventListener('click', () => {
-        if ((paginaUsuarios + 1) * usuariosPorPagina < usuarios.length) {
-            paginaUsuarios++;
-            updateUsuarioList();
-        }
-    });
+    // Carregar gráfico de desempenho
+    function loadChart() {
+        fetch('/api/progress')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(user => user.nome_usuario);
+                const concluded = data.map(user => user.treinamentos_concluidos);
+                const notConcluded = data.map(user => user.treinamentos_nao_concluidos);
+    
+                const ctx = document.getElementById('progressChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Treinamentos Concluídos',
+                            data: concluded,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Treinamentos Não Concluídos',
+                            data: notConcluded,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar o gráfico de desempenho:', error);
+            });
+    }    
 
-    document.getElementById('prev-tabela').addEventListener('click', () => {
-        if (paginaTabela > 0) {
-            paginaTabela--;
-            updateTabelaTreinamentos();
-        }
-    });
-
-    document.getElementById('next-tabela').addEventListener('click', () => {
-        if ((paginaTabela + 1) * tabelaPorPagina < treinamentos.length) {
-            paginaTabela++;
-            updateTabelaTreinamentos();
-        }
-    });
-
-    // Inicializar os dados e atualizar as exibições
-    updateUsuarioSelect();
-    updateTreinamentoSelect();
-    updateUsuarioList();
-    updateTabelaTreinamentos();
-    updateGrafico();
+    // Carrega os dados ao iniciar
+    loadUsers();
+    loadTickets();
+    loadChart();
 });

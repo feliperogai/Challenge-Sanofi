@@ -15,10 +15,18 @@ function displayFeedback(message, type) {
     feedbackElement.textContent = message;
     feedbackElement.className = `feedback ${type}`;
     feedbackElement.style.display = 'block';
+
+    // Define um timeout para ocultar a mensagem após 2 segundos
+    setTimeout(() => {
+        feedbackElement.style.display = 'none';
+    }, 2000);
 }
 
 // Função para carregar e exibir usuários
 function loadUsers() {
+    // Exibe o indicador de carregamento
+    document.getElementById('loadingIndicator').style.display = 'block';
+
     fetch('/api/users')
         .then(response => response.json())
         .then(users => {
@@ -34,21 +42,46 @@ function loadUsers() {
 
                 const actionsCell = row.insertCell(4);
                 actionsCell.innerHTML = `
-                    <button class="button button-warning" onclick="changeUserType(${user.id})">Alterar Tipo</button>
-                    <button class="button button-danger" onclick="deleteUser(${user.id})">Excluir</button>
+                    <button class="button button-warning" onclick="changeUserType(${user.id})">Alterar Permissão</button>
+                    <button class="button button-danger" onclick="deleteUser(${user.id})">Excluir Usuário</button>
                 `;
             });
         })
         .catch(error => {
             console.error('Erro ao carregar usuários:', error);
             displayFeedback('Erro ao carregar usuários.', 'error');
+        })
+        .finally(() => {
+            // Oculta o indicador de carregamento
+            document.getElementById('loadingIndicator').style.display = 'none';
         });
 }
 
+// Variável para armazenar o ID do usuário atual
+let currentUserId;
+
 // Função para alterar o tipo de usuário
 function changeUserType(userId) {
-    const newType = prompt('Digite o novo tipo de usuário (admin/user):');
-    if (!newType) return;
+    currentUserId = userId; // Guarda o ID do usuário atual
+    const tableRows = document.querySelectorAll('#usersTable tbody tr');
+
+    // Procura a linha correspondente ao userId
+    tableRows.forEach(row => {
+        const idCell = row.cells[0].textContent; // Assume que o ID está na primeira coluna
+        if (idCell == userId) {
+            const userName = row.cells[1].textContent; // Assume que o nome está na segunda coluna
+            document.getElementById('modal-user-name').textContent = `Nome do Usuário: ${userName}`;
+            document.getElementById('userTypeModal').style.display = 'block'; // Exibe o modal
+        }
+    });
+}
+
+function closeModal() {
+    document.getElementById('userTypeModal').style.display = 'none'; // Fecha o modal
+}
+
+function confirmChange() {
+    const newType = document.getElementById('newUserType').value;
 
     fetch('/api/user-settings', {
         method: 'POST',
@@ -57,7 +90,7 @@ function changeUserType(userId) {
         },
         body: new URLSearchParams({
             'change-user-type': 'true',
-            'user-id': userId,
+            'user-id': currentUserId,
             'new-type': newType
         })
     })
@@ -67,10 +100,12 @@ function changeUserType(userId) {
         if (data.status === 'success') {
             loadUsers(); // Recarrega a lista de usuários
         }
+        closeModal(); // Fecha o modal
     })
     .catch(error => {
         console.error('Erro ao alterar o tipo de usuário:', error);
         displayFeedback('Erro ao alterar o tipo de usuário.', 'error');
+        closeModal(); // Fecha o modal
     });
 }
 

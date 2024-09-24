@@ -9,7 +9,7 @@
 
 /* Estilo do corpo */
 body {
-    background-color: #f2f2f2;
+    background-color: #f4f4f4; /* Alterado para um tom mais suave */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,10 +21,15 @@ body {
 .container {
     background-color: #fff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px; /* Bordas mais arredondadas */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
     width: 100%;
     max-width: 400px;
+    transition: transform 0.3s ease; /* Adiciona uma leve transformação ao passar o mouse */
+}
+
+.container:hover {
+    transform: translateY(-5px); /* Leve efeito de elevação ao passar o mouse */
 }
 
 /* Estilo da imagem */
@@ -39,8 +44,8 @@ body {
 /* Estilo do título */
 .registration-form h2 {
     margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
+    font-size: 26px; /* Aumentado para maior destaque */
+    color: rgb(122, 0, 230); /* Cor mais vibrante */
     text-align: center;
 }
 
@@ -57,28 +62,35 @@ body {
 .registration-form input[type="email"],
 .registration-form input[type="password"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px; /* Aumentado para conforto */
     margin-bottom: 20px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 6px; /* Bordas mais suaves */
+    transition: border-color 0.3s ease; /* Transição suave para a borda */
+}
+
+.registration-form input:focus {
+    border-color: rgb(122, 0, 230); /* Cor da borda ao focar */
+    outline: none; /* Remove o contorno padrão */
 }
 
 /* Estilo do botão */
 .registration-form button {
     width: 100%;
-    padding: 10px;
-    background-color: #7a00e6;
+    padding: 12px;
+    background-color: rgb(122, 0, 230);
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px; /* Bordas mais suaves */
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s; /* Adiciona transição de transformação */
 }
 
 .registration-form button:hover {
-    background-color: #8301f5;
+    background-color: rgb(131, 1, 245);
+    transform: scale(1.02); /* Leve aumento ao passar o mouse */
 }
 
 /* Estilo do texto de convite para se cadastrar */
@@ -90,7 +102,7 @@ body {
 }
 
 .signup-prompt a {
-    color: #7a00e6;
+    color: rgb(122, 0, 230);
     text-decoration: none;
     font-weight: 700;
 }
@@ -113,18 +125,18 @@ p {
     }
 
     .registration-form h2 {
-        font-size: 20px;
+        font-size: 22px; /* Ajustado para manter a legibilidade */
     }
 
     .registration-form input[type="text"],
     .registration-form input[type="email"],
     .registration-form input[type="password"] {
-        padding: 8px;
+        padding: 10px; /* Ajustado para conforto */
         margin-bottom: 15px;
     }
 
     .registration-form button {
-        padding: 8px;
+        padding: 10px;
         font-size: 14px;
     }
 

@@ -8,36 +8,48 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    padding: 20px; /* Adicionado padding para evitar que o conteúdo encoste nas bordas em dispositivos móveis */
+    padding: 20px;
+    transition: background-color 0.3s ease; /* Suaviza a transição do fundo */
 }
 
 .login-container {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 30px; /* Aumentado para um toque mais espaçoso */
+    border-radius: 12px; /* Borda mais arredondada */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
     text-align: center;
-    box-sizing: border-box; /* Assegura que o padding e a largura sejam contabilizados corretamente */
+    box-sizing: border-box;
+    transition: transform 0.3s ease; /* Animação de transformação */
+}
+
+.login-container:hover {
+    transform: scale(1.02); /* Leve aumento ao passar o mouse */
 }
 
 .login-container img {
     display: block;
     margin: 0 auto 20px;
-    max-width: 100%; /* Garante que a imagem seja responsiva */
-    height: auto; /* Mantém a proporção da imagem */
+    max-width: 100%;
+    height: auto;
     height: 120px;
 }
 
 .login-container input {
     width: 100%;
-    padding: 12px;
+    padding: 14px; /* Mais espaçamento */
     margin: 10px 0;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px; /* Bordas arredondadas */
     box-sizing: border-box;
     font-size: 16px;
+    transition: border-color 0.3s ease; /* Suaviza a transição de bordas */
+}
+
+.login-container input:focus {
+    border-color: #7a00e6; /* Destaque na borda ao focar */
+    outline: none; /* Remove o contorno padrão */
 }
 
 .password-hint {
@@ -49,20 +61,21 @@ body {
 
 .login-container button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     background-color: #7a00e6;
     border: none;
     color: #fff;
     font-size: 16px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Suaviza transições */
     margin-top: 20px;
     font-weight: 700;
 }
 
 .login-container button:hover {
     background-color: #8301f5;
+    transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
 }
 
 .login-options {
@@ -117,27 +130,26 @@ p {
     background-color: #7a00e6;
     color: #fff;
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 18px;
     font-weight: 700;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .action-button:hover {
     background-color: #8301f5;
+    transform: translateY(-2px); /* Efeito de elevação */
 }
 
 /* Media Queries para responsividade */
-
-/* Estilos para telas menores que 768px (tablets e smartphones) */
 @media (max-width: 768px) {
     .login-container {
-        padding: 15px;
+        padding: 20px; /* Ajuste do padding */
     }
 
     .login-container button {
         font-size: 14px;
-        padding: 10px;
+        padding: 12px; /* Ajuste do padding */
     }
 
     .action-button {
@@ -145,15 +157,14 @@ p {
     }
 }
 
-/* Estilos para telas menores que 480px (smartphones pequenos) */
 @media (max-width: 480px) {
     .login-container {
-        padding: 10px;
+        padding: 15px; /* Ajuste do padding */
     }
 
     .login-container button {
         font-size: 14px;
-        padding: 10px;
+        padding: 10px; /* Ajuste do padding */
     }
 
     .action-button {

@@ -5,31 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sanofi - Formulário</title>
     <link rel="stylesheet" href="../static/css/check.css">
-    <link rel="icon" href="../static/images/icon.jpg">
+    <link rel="icon" href="../static/images/icon.jpg" type="image/jpeg">
 </head>
 <body>
     <div class="container">
         <center><img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="sanofi" height="120px"></center>
         <h2>Formulário de Presença</h2>
-        <form id="dataForm">
+        <form id="dataForm" action="/submit" method="post">
             <label for="name">Nome Completo:</label>
             <input type="text" id="name" name="name" required><br>
-
+        
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required><br>
-
-            <label for="date">Data e Hora:</label>
-            <input type="text" id="date" name="date" readonly><br>
-
+        
+            <label for="date">Data e Hora do Treinamento:</label>
+            <input type="datetime-local" id="date" name="date" required><br>
+        
             <label for="signature">Assinatura:</label>
             <input type="text" id="signature" name="signature" required><br>
-
-            <button type="button" onclick="generateAndUploadPDF()">Enviar</button>
-        </form>
+        
+            <button type="submit">Enviar</button>
+        </form>        
         <a href="/">Voltar ao Login</a>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../static/js/check.js"></script>
+    <script>
+        const now = new Date();
+            const datetimeLocal = now.toISOString().slice(0, 16); // Formato: YYYY-MM-DDTHH:MM
+            document.getElementById('date').value = datetimeLocal;
+            document.getElementById('current_date').value = now.toISOString(); // Para enviar a data atual
+    </script>
 </body>
 </html>
