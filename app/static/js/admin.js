@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 0; // Página inicial
-    const ticketsPerPage = 4; // Ajuste para 4 tickets por página
+    const ticketsPerPage = 4; // Ajustado para 4 tickets por página
     let selectedUsers = [];
 
     // Carregar usuários ao iniciar
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Carregar tickets
     function loadTickets() {
-        fetch(`/api/tickets?page=${currentPage}&limit=${ticketsPerPage}`) // Adiciona limite à requisição
+        fetch(`/api/tickets?page=${currentPage}&limit=${ticketsPerPage}`) // Mantém a limitação a 4 tickets
             .then(response => response.json())
             .then(tickets => {
                 const ticketsList = document.getElementById('tickets-container');
@@ -135,10 +135,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Função para mostrar detalhes do ticket
     window.showTicketDetails = function(ticketId) {
         fetch(`/api/tickets/${ticketId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ticket não encontrado');
+                }
+                return response.json();
+            })
             .then(ticket => {
                 document.getElementById('modal-titulo').textContent = ticket.nome_treinamento;
-                document.getElementById('modal-usuarios').textContent = ticket.usuarios.join(', ');
+                document.getElementById('modal-usuarios').textContent = ticket.usuarios;
                 document.getElementById('modal-data').textContent = formatDate(ticket.data);
                 document.getElementById('modal-horario').textContent = ticket.time;
                 const modalLink = document.getElementById('modal-link');
@@ -148,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Erro ao carregar detalhes do ticket:', error);
+                alert('Erro ao carregar os detalhes do ticket.');
             });
     };
 
@@ -172,30 +178,41 @@ document.addEventListener('DOMContentLoaded', function () {
     // Carregar gráfico de desempenho
     function loadChart() {
         fetch('/api/progress')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao carregar os dados do gráfico.');
+                return response.json();
+            })
             .then(data => {
-                const labels = data.map(user => user.nome_usuario);
-                const concluded = data.map(user => user.treinamentos_concluidos);
-                const notConcluded = data.map(user => user.treinamentos_nao_concluidos);
+                // Verifique se data é um array
+                if (!Array.isArray(data)) {
+                    throw new Error('Dados retornados não são um array.');
+                }
+    
+                const labels = data.map(training => training.nome_usuario); // Ajustado para nome do usuário
+                const concluded = data.map(training => training.treinamentos_concluidos);
+                const notConcluded = data.map(training => training.treinamentos_nao_concluidos);
     
                 const ctx = document.getElementById('progressChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Treinamentos Concluídos',
-                            data: concluded,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }, {
-                            label: 'Treinamentos Não Concluídos',
-                            data: notConcluded,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        }]
+                        datasets: [
+                            {
+                                label: 'Treinamentos Concluídos',
+                                data: concluded,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Treinamentos Não Concluídos',
+                                data: notConcluded,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
                     },
                     options: {
                         scales: {
@@ -208,11 +225,12 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Erro ao carregar o gráfico de desempenho:', error);
+                document.getElementById('chart-error').textContent = 'Erro ao carregar os dados do gráfico.';
             });
     }    
-
-    // Carrega os dados ao iniciar
+    
+    // Carregar gráfico ao iniciar
+    loadChart();
     loadUsers();
     loadTickets();
-    loadChart();
 });

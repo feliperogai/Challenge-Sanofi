@@ -7,7 +7,7 @@ import pymysql
 # Instale PyMySQL como substituto para MySQLdb
 pymysql.install_as_MySQLdb()
 
-# Inicialize a instância do SQLAlchemy e Flask-Migrate
+# Inicialize a instância do SQLAlchemy, Flask-Migrate e Flask-Mail
 db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()

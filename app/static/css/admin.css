@@ -394,12 +394,9 @@ th {
 }
 
 /* Estilo para gráficos */
-#grafico {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 12px; /* Bordas mais arredondadas */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
+#progressChart {
+    width: 100%;
+    height: 400px; /* Ajuste a altura conforme necessário */
 }
 
 /* Media Queries para responsividade */

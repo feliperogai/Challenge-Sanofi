@@ -22,6 +22,8 @@
         </div>
     </header>
 
+    <p id="chart-error" style="color: red;"></p>
+
     <nav id="side-menu" class="side-menu">
         <button class="closebtn" onclick="closeMenu()">&times;</button>
         <div class="user-info">
@@ -78,7 +80,7 @@
 
         <section>
             <h2>Desempenho dos Usuários</h2>
-            <canvas id="progressChart" width="400" height="200"></canvas>
+            <canvas id="progressChart"></canvas>
         </section>
     </main>
 
@@ -94,6 +96,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../static/js/admin.js"></script>
     <script src="/static/js/logout.js"></script>
     <script>

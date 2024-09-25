@@ -555,13 +555,13 @@ def configure_routes(app):
                 else:
                     # Se não existe, cria um novo
                     cursor.execute("""
-                        INSERT INTO treinamentos (usuario_id, nome_treinamento, data_hora, link)
-                        VALUES (%s, %s, %s, %s)
-                    """, (usuario_ids[0], nome_treinamento, data_hora, link))  # Insere o primeiro usuário
+                        INSERT INTO treinamentos (nome_treinamento, data_hora, link)
+                        VALUES (%s, %s, %s)
+                    """, (nome_treinamento, data_hora, link))  # Insere o primeiro usuário
                     treinamento_id = cursor.lastrowid
                     
                     # Insere os outros usuários
-                    for usuario_id in usuario_ids[1:]:
+                    for usuario_id in usuario_ids:
                         cursor.execute("""
                             INSERT INTO usuario_treinamento (usuario_id, treinamento_id)
                             VALUES (%s, %s)
@@ -583,29 +583,42 @@ def configure_routes(app):
     @app.route('/api/progress', methods=['GET'])
     def get_progress_data():
         try:
-            # Consulta para buscar os dados de progresso dos usuários
-            users = Usuario.query.all()  # Assume que você tem um modelo Usuario
+            print("Iniciando a busca de usuários...")
+            users = Usuario.query.all()
+            print(f"Usuários encontrados: {len(users)}")
+
             progress_data = []
 
             for user in users:
-                # Buscando os treinamentos associados ao usuário
-                total_trainings = UsuarioTreinamento.query.filter_by(usuario_id=user.id).count()  # Total de treinamentos
-                completed_trainings = UsuarioTreinamento.query.join(Treinamento).filter(
-                    UsuarioTreinamento.usuario_id == user.id,
-                    Treinamento.presenca_confirmada == True
-                ).count()  # Concluídos
-                not_completed_trainings = total_trainings - completed_trainings  # Não concluídos
+                print(f"Processando usuário: {user.nome_usuario}")
+                try:
+                    total_trainings = UsuarioTreinamento.query.filter_by(usuario_id=user.id).count()
+                    print(f"Total de treinamentos para {user.nome_usuario}: {total_trainings}")
 
-                progress_data.append({
-                    'nome_usuario': user.nome_usuario,
-                    'treinamentos_concluidos': completed_trainings,
-                    'treinamentos_nao_concluidos': not_completed_trainings
-                })
+                    completed_trainings = UsuarioTreinamento.query.join(Treinamento).filter(
+                        UsuarioTreinamento.usuario_id == user.id,
+                        Treinamento.presenca_confirmada == True
+                    ).count()
+                    print(f"Treinamentos concluídos para {user.nome_usuario}: {completed_trainings}")
 
+                    not_completed_trainings = total_trainings - completed_trainings
+                    print(f"Treinamentos não concluídos para {user.nome_usuario}: {not_completed_trainings}")
+
+                    progress_data.append({
+                        'nome_usuario': user.nome_usuario,
+                        'treinamentos_concluidos': completed_trainings,
+                        'treinamentos_nao_concluidos': not_completed_trainings
+                    })
+
+                except Exception as user_error:
+                    print(f"Erro ao processar o usuário {user.nome_usuario}: {user_error}")
+
+            print("Dados de progresso:", progress_data)
             return jsonify(progress_data), 200
 
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            print(f"Erro na rota /api/progress: {e}")
+            return jsonify([]), 500  # Retornar um array vazio em caso de erro
 
     @app.route('/logout', methods=['POST'])
     def logout():
