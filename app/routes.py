@@ -493,21 +493,43 @@ def configure_routes(app):
     def get_ticket_details(ticket_id):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
+
+        # Query para obter detalhes do treinamento, incluindo usuários que participaram
         cursor.execute("""
             SELECT t.nome_treinamento, t.data_hora, t.link,
                 GROUP_CONCAT(u.nome_usuario) as usuarios
             FROM treinamentos t
-            JOIN usuarios u ON t.usuario_id = u.id
+            LEFT JOIN usuario_treinamento ut ON t.id = ut.treinamento_id
+            LEFT JOIN usuarios u ON ut.usuario_id = u.id
             WHERE t.id = %s
             GROUP BY t.id
         """, (ticket_id,))
+        
         ticket = cursor.fetchone()
+
+        # Query para obter usuários que participaram mas não confirmaram presença
+        cursor.execute("""
+            SELECT u.nome_usuario FROM usuarios u
+            WHERE u.id IN (
+                SELECT usuario_id FROM usuario_treinamento ut 
+                WHERE ut.treinamento_id = %s
+            ) AND u.id NOT IN (
+                SELECT ut.usuario_id FROM usuario_treinamento ut 
+                JOIN treinamentos t ON ut.treinamento_id = t.id
+                WHERE ut.treinamento_id = %s AND ut.presenca_id = TRUE
+            )
+        """, (ticket_id, ticket_id))
+        
+        non_completers = cursor.fetchall()
+        
         cursor.close()
         conn.close()
 
         if ticket:
-            ticket['data'] = ticket['data_hora'].strftime('%Y-%m-%d')
-            ticket['time'] = ticket['data_hora'].strftime('%H:%M')
+            ticket['data'] = ticket['data_hora'].strftime('%d-%m-%Y')
+            ticket['time'] = ticket['data_hora'].strftime('%H:%M')  # Adiciona horário formatado
+            ticket['usuarios'] = ticket['usuarios'].split(',') if ticket['usuarios'] else []
+            ticket['usuarios_nao_concluintes'] = [user['nome_usuario'] for user in non_completers]  # Usuários que não confirmaram presença
             del ticket['data_hora']  # Remove o campo original
             return jsonify(ticket)
         else:
@@ -557,10 +579,10 @@ def configure_routes(app):
                     cursor.execute("""
                         INSERT INTO treinamentos (nome_treinamento, data_hora, link)
                         VALUES (%s, %s, %s)
-                    """, (nome_treinamento, data_hora, link))  # Insere o primeiro usuário
+                    """, (nome_treinamento, data_hora, link))
                     treinamento_id = cursor.lastrowid
                     
-                    # Insere os outros usuários
+                    # Insere os usuários
                     for usuario_id in usuario_ids:
                         cursor.execute("""
                             INSERT INTO usuario_treinamento (usuario_id, treinamento_id)
@@ -579,7 +601,7 @@ def configure_routes(app):
                 conn.close()
 
         return render_template('admin.html', user_id=user_id)
-    
+
     @app.route('/api/progress', methods=['GET'])
     def get_progress_data():
         try:
@@ -595,9 +617,10 @@ def configure_routes(app):
                     total_trainings = UsuarioTreinamento.query.filter_by(usuario_id=user.id).count()
                     print(f"Total de treinamentos para {user.nome_usuario}: {total_trainings}")
 
-                    completed_trainings = UsuarioTreinamento.query.join(Treinamento).filter(
+                    # Contar treinamentos concluídos com presenca_id não nulo
+                    completed_trainings = UsuarioTreinamento.query.filter(
                         UsuarioTreinamento.usuario_id == user.id,
-                        Treinamento.presenca_confirmada == True
+                        UsuarioTreinamento.presenca_id.isnot(None)  # Presença confirmada
                     ).count()
                     print(f"Treinamentos concluídos para {user.nome_usuario}: {completed_trainings}")
 
@@ -619,6 +642,103 @@ def configure_routes(app):
         except Exception as e:
             print(f"Erro na rota /api/progress: {e}")
             return jsonify([]), 500  # Retornar um array vazio em caso de erro
+        
+    @app.route('/api/tickets/user', methods=['GET'])
+    def get_user_tickets():
+        user_id = is_authenticated_and_get_user()  # Função para obter o ID do usuário autenticado
+        if not user_id:
+            return jsonify({'message': 'Não autenticado!'}), 401
+
+        try:
+            conn = get_db_connection()
+            if conn is None:
+                return jsonify({'message': 'Erro ao conectar ao banco de dados.'}), 500
+
+            cursor = conn.cursor()
+
+            # Pegar parâmetros de paginação
+            page = int(request.args.get('page', 0))
+            limit = int(request.args.get('limit', 4))
+            offset = page * limit
+
+            # Consulta para pegar os tickets (treinamentos) do usuário autenticado
+            cursor.execute("""
+                SELECT t.id, t.nome_treinamento, t.data_hora, t.link,
+                    COUNT(ut.id) AS num_usuarios
+                FROM treinamentos t
+                LEFT JOIN usuario_treinamento ut ON t.id = ut.treinamento_id
+                WHERE ut.usuario_id = %s
+                GROUP BY t.id
+                LIMIT %s OFFSET %s
+            """, (user_id, limit, offset))
+
+            tickets = cursor.fetchall()
+
+            tickets_data = []
+            for ticket in tickets:
+                ticket_data = {
+                    'id': ticket[0],
+                    'nome_treinamento': ticket[1],
+                    'data_hora': ticket[2],
+                    'link': ticket[3],
+                    'num_usuarios': ticket[4] if ticket[4] is not None else 0
+                }
+                tickets_data.append(ticket_data)
+
+            return jsonify(tickets_data), 200
+
+        except Exception as e:
+            print(f"Erro ao obter tickets do usuário: {e}")
+            return jsonify({'message': 'Erro ao carregar tickets.'}), 500
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    @app.route('/api/progress/user', methods=['GET'])
+    def get_user_progress():
+        user_id = is_authenticated_and_get_user()
+        if not user_id:
+            return jsonify({'message': 'Não autenticado!'}), 401
+
+        try:
+            conn = get_db_connection()
+            if conn is None:
+                return jsonify({'message': 'Erro ao conectar ao banco de dados.'}), 500
+
+            cursor = conn.cursor()
+            # Ajustar a consulta para pegar apenas os dados do usuário autenticado
+            cursor.execute("""
+                SELECT u.nome_usuario, 
+                    COUNT(ut.id) AS total_trainings, 
+                    SUM(CASE WHEN ut.presenca_id IS NOT NULL THEN 1 ELSE 0 END) AS completed_trainings 
+                FROM usuarios u
+                LEFT JOIN usuario_treinamento ut ON u.id = ut.usuario_id
+                WHERE u.id = %s
+                GROUP BY u.id
+            """, (user_id,))
+            
+            result = cursor.fetchone()
+            
+            if result:
+                nome_usuario, total_trainings, completed_trainings = result
+                not_completed_trainings = total_trainings - completed_trainings if total_trainings else 0
+
+                progress_data = {
+                    'nome_usuario': nome_usuario,
+                    'treinamentos_concluidos': completed_trainings,
+                    'treinamentos_nao_concluidos': not_completed_trainings
+                }
+                return jsonify(progress_data), 200
+            else:
+                return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        except Exception as e:
+            print(f"Erro ao obter progresso do usuário: {e}")
+            return jsonify([]), 500
+        finally:
+            cursor.close()
+            conn.close()
 
     @app.route('/logout', methods=['POST'])
     def logout():

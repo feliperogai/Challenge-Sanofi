@@ -1,4 +1,4 @@
-from. import db
+from . import db
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'  # Nome da tabela no banco de dados
@@ -12,11 +12,13 @@ class Usuario(db.Model):
     # Relacionamento com UsuarioTreinamento
     treinamentos = db.relationship('UsuarioTreinamento', backref='usuario', lazy=True)
 
+
 class PasswordResetToken(db.Model):
     __tablename__ = 'password_reset_tokens'
     token = db.Column(db.String(255), primary_key=True)
     email = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
 
 class Presenca(db.Model):
     __tablename__ = 'presenca'
@@ -26,6 +28,7 @@ class Presenca(db.Model):
     data_hora = db.Column(db.String(50), nullable=False)
     assinatura = db.Column(db.String(100), nullable=False)
 
+
 class Treinamento(db.Model):
     __tablename__ = 'treinamentos'  # Nome da tabela no banco de dados
     id = db.Column(db.Integer, primary_key=True)
@@ -34,15 +37,16 @@ class Treinamento(db.Model):
     link = db.Column(db.String(255), nullable=False)
     presenca_confirmada = db.Column(db.Boolean, default=False)
 
-    # O backref aqui pode ser renomeado
+    # Relacionamento com UsuarioTreinamento
     usuario_treinamentos = db.relationship('UsuarioTreinamento', backref='treinamento', lazy=True)
+
 
 class UsuarioTreinamento(db.Model):
     __tablename__ = 'usuario_treinamento'  # Nome da tabela no banco de dados
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     treinamento_id = db.Column(db.Integer, db.ForeignKey('treinamentos.id'), nullable=False)
+    presenca_id = db.Column(db.Integer, db.ForeignKey('presenca.id'), nullable=True)  # Adicionado
 
-    # Removido o backref adicional
-    # O relacionamento com Treinamento já é suficiente
-    # Se quiser, você pode deixar apenas um backref único
+    # Relacionamentos adicionais
+    presenca = db.relationship('Presenca', backref='usuario_treinamentos', lazy=True)  # Adicionado

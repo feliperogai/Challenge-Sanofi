@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="../static/css/user.css">
     <link rel="icon" href="../static/images/icon.jpg" type="image/jpeg">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/static/js/auth.js" defer></script>
+    <script src="../static/js/auth.js" defer></script>
+    <script src="../static/js/user.js" defer></script>
 </head>
 <body>
     <header>
@@ -33,22 +34,37 @@
     </div>
 
     <main>
-        <div id="tickets-container">
-            <!-- Tickets serão inseridos aqui pelo JavaScript -->
+        <section>
+            <h2>Tickets</h2>
+            <div id="tickets-container"></div>
+            <div id="pagination-controls">
+                <button id="prev-tickets" style="display: none;">Anterior</button>
+                <button id="next-tickets">Próximo</button>
+            </div>      
+        </section>
+
+        <!-- Modal para detalhes do treinamento -->
+        <div id="ticket-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modal-titulo"></h2>
+                <p><strong></strong> <span id="modal-usuarios"></span></p> 
+                <p><strong>Treinamento:</strong> <span id="modal-treinamento"></span></p> 
+                <p><strong>Data:</strong> <span id="modal-data"></span></p>
+                <p><strong>Horário:</strong> <span id="modal-horario"></span></p>
+                <p><strong>Link:</strong> <a id="modal-link" href="#" target="_blank">Acessar treinamento</a></p>
+            </div>
         </div>
 
-        <div id="pagination-controls">
-            <button id="prev-tickets">Anterior</button>
-            <button id="next-tickets">Próximo</button>
-        </div>
-
-        <div id="grafico-container">
+        <section>
+            <h2>Desempenho do Usuário</h2>
+            <div id="loadingIndicator" class="loadingIndicator" style="display:none;">Carregando...</div>
+            <div id="grafico-container" class="loading" style="display: none;">Carregando...</div>
             <canvas id="grafico-desempenho"></canvas>
-        </div>
+        </section>
     </main>
 
-    <script src="../static/js/user.js"></script>
-    <script src="/static/js/logout.js"></script>
+    <script src="../static/js/logout.js"></script>
     <script>
         // Função para exibir o menu lateral
         function toggleMenu() {

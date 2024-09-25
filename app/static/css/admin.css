@@ -224,14 +224,15 @@ header h1 {
     width: 100%; /* Largura total */
     height: 100%; /* Altura total */
     overflow: auto; /* Habilita rolagem se necessário */
-    background-color: rgb(0,0,0); /* Cor de fundo com opacidade */
-    background-color: rgba(0,0,0,0.4); /* Fundo escuro */
+    background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro com opacidade */
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* Margens superior e centralizada */
+    margin: 10% auto; /* Margens superior e centralizada */
     padding: 20px;
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
     border: 1px solid #888;
     width: 80%; /* Largura do modal */
     max-width: 600px; /* Largura máxima */
@@ -249,6 +250,12 @@ header h1 {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+/* Estilo para usuários que não completaram o treinamento */
+.usuario-nao-concluido {
+    color: red; /* Texto vermelho */
+    font-weight: bold; /* Negrito */
 }
 
 .usuario-container {
@@ -397,6 +404,60 @@ th {
 #progressChart {
     width: 100%;
     height: 400px; /* Ajuste a altura conforme necessário */
+}
+
+/* Carregando */
+.loading {
+    display: none;
+    text-align: center;
+    font-size: 20px;
+    margin: 20px 0;
+    color: #7a00e6;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 4px solid #7a00e6;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+/* Animações */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Nova animação para o modal */
+@keyframes slideIn {
+    from {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* Media Queries para responsividade */

@@ -22,8 +22,6 @@
         </div>
     </header>
 
-    <p id="chart-error" style="color: red;"></p>
-
     <nav id="side-menu" class="side-menu">
         <button class="closebtn" onclick="closeMenu()">&times;</button>
         <div class="user-info">
@@ -80,6 +78,7 @@
 
         <section>
             <h2>Desempenho dos Usuários</h2>
+            <div id="loadingIndicator" class="loading" style="display: none;">Carregando...</div>
             <canvas id="progressChart"></canvas>
         </section>
     </main>
@@ -89,12 +88,13 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2 id="modal-titulo"></h2>
-            <p><strong>Usuários:</strong> <span id="modal-usuarios"></span></p>
+            <p><strong>Usuários cadastrados:</strong> <span id="modal-usuarios"></span></p>
+            <p><strong>Ausentes:</strong> <span id="modal-usuarios-nao-concluintes"></span></p>
             <p><strong>Data:</strong> <span id="modal-data"></span></p>
             <p><strong>Horário:</strong> <span id="modal-horario"></span></p>
-            <p><strong>Link:</strong> <a id="modal-link" href="#" target="_blank"></a></p>
+            <p><strong>Link:</strong> <a id="modal-link" href="#" target="_blank">Acessar treinamento</a></p>
         </div>
-    </div>
+    </div>      
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../static/js/admin.js"></script>
