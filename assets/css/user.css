@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Variáveis CSS para cores e tamanhos */
+:root {
+    --primary-color: rgb(122, 0, 230);
+    --secondary-color: #333;
+    --background-color: #f4f4f4;
+    --card-background: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --text-color-light: #555;
+    --text-color-dark: #333;
+    --border-color: #ddd;
+    --btn-background: rgb(122, 0, 230);
+    --btn-background-hover: rgb(131, 1, 245);
+    --btn-disabled: #ccc;
+}
+
+/* Estilo global da página */
+body {
+    margin: 0;
+    font-family: "Work Sans", sans-serif;
+    color: var(--text-color-dark);
+    background-color: var(--background-color);
+    padding-top: 80px; /* Espaço para o cabeçalho fixo */
+    box-sizing: border-box; /* Garante que o padding seja considerado dentro do tamanho do box */
+}
+
+/* Estilo do header */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: var(--card-background);
+    color: var(--text-color-dark);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px var(--card-shadow);
+    z-index: 1000;
+    box-sizing: border-box;
+    justify-content: space-between; /* Alinha os itens do header */
+    flex-wrap: wrap; /* Garante que os itens do header possam quebrar em múltiplas linhas se necessário */
+}
+
+/* Menu de ícone */
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 20px;
+    position: relative;
+    z-index: 1100; /* Garantir que o ícone esteja acima da imagem */
+}
+
+/* Estilo dos itens do menu hamburguer */
+.menu-icon div {
+    width: 30px;
+    height: 4px;
+    background-color: var(--text-color-dark);
+    margin: 5px 0;
+}
+
+/* Logo da empresa */
+header img {
+    height: 60px;
+    width: auto;
+    margin-right: 20px;
+}
+
+/* Título do header */
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+    flex: 2; /* Permite que o título ocupe o espaço restante */
+    text-align: left;
+}
+
+/* Menu Lateral */
+#side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--card-background);
+    color: var(--text-color-dark);
+    overflow-x: hidden;
+    padding-top: 60px;
+    box-shadow: 2px 0 5px var(--card-shadow);
+    z-index: 1000;
+}
+
+#side-menu .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    color: #fff;
+    background-color: var(--primary-color);
+    cursor: pointer;
+    border: none;
+}
+
+#side-menu .user-info {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#side-menu .user-info p {
+    margin: 0 0 10px;
+}
+
+#side-menu a {
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: var(--primary-color);
+    display: block;
+    transition: background-color 0.3s;
+}
+
+#side-menu a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Contêiner geral */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Contêiner de tickets */
+#tickets-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+/* Ticket */
+.ticket {
+    background-color: var(--card-background);
+    border-radius: 8px;
+    padding: 12px;
+    width: calc(25% - 16px);
+    box-shadow: 0 2px 4px var(--card-shadow);
+    box-sizing: border-box;
+}
+
+.ticket h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: var(--text-color-dark);
+}
+
+.ticket p {
+    margin: 8px 0;
+    color: var(--text-color-light);
+}
+
+.ticket a {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.ticket a:hover {
+    text-decoration: underline;
+}
+
+.ticket .concluido {
+    font-weight: bold;
+    color: green;
+}
+
+.ticket .nao-concluido {
+    font-weight: bold;
+    color: red;
+}
+
+/* Botões de navegação */
+#pagination-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#pagination-controls button {
+    background-color: var(--btn-background);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#pagination-controls button:disabled {
+    background-color: var(--btn-disabled);
+    cursor: not-allowed;
+}
+
+#pagination-controls button:hover:not(:disabled) {
+    background-color: var(--btn-background-hover);
+}
+
+/* Gráfico de desempenho */
+#grafico-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#grafico-desempenho {
+    max-width: 100%;
+    height: 300px;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    margin: 0 auto;
+    display: block;
+}
+
+/* Estilos Responsivos */
+
+/* Telas menores que 768px */
+@media (max-width: 768px) {
+    header {
+        flex-direction: row;
+        padding: 10px;
+        justify-content: space-between; /* Garante que o menu hamburguer fique alinhado à esquerda */
+        text-align: left;
+    }
+
+    .menu-icon {
+        margin: 0;
+        order: 1; /* Garante que o menu hamburguer fique à esquerda */
+    }
+
+    header img {
+        margin-right: 10px;
+        flex: none; /* Impede que a imagem seja redimensionada */
+    }
+
+    header h1 {
+        font-size: 1.25rem;
+        margin-left: 10px; /* Ajusta a margem para que o título não fique colado à imagem */
+        flex: 2; /* Permite que o título ocupe mais espaço se necessário */
+    }
+
+    .ticket {
+        width: calc(50% - 16px);
+    }
+
+    #grafico-desempenho {
+        height: 250px;
+    }
+}
+
+/* Telas menores que 390px */
+@media (max-width: 390px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start; /* Garante que os itens fiquem alinhados à esquerda */
+        padding: 10px;
+    }
+
+    .menu-icon {
+        margin: 0;
+        align-self: flex-start; /* Garante que o menu hamburguer fique alinhado ao topo */
+    }
+
+    header img {
+        margin-bottom: 10px;
+        width: 100px; /* Define uma largura fixa para evitar problemas de redimensionamento */
+        height: auto;
+    }
+
+    header h1 {
+        font-size: 1rem;
+        text-align: center; /* Centraliza o título em telas pequenas */
+        margin-left: 0; /* Remove a margem esquerda */
+        flex: none; /* Impede que o título ocupe mais espaço do que o necessário */
+    }
+
+    .ticket {
+        width: 100%;
+    }
+
+    #grafico-desempenho {
+        height: 200px;
+    }
+}

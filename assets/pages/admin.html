@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanofi - Controle de Treinamento</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="icon" href="../images/sanofi-logo.jpg">
+</head>
+<body>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Logo_Sanofi_%282022%29.png" alt="Logo" class="logo">
+            <h1>Controle de Treinamento</h1>
+        </div>
+    </header>
+
+    <div id="side-menu">
+        <button class="closebtn" onclick="closeMenu()">&times;</button>
+        <div class="user-info">
+            <p><strong>Administrador</strong></p>
+            <p>admin@sanofi.com.br</p>
+        </div>
+        <a href="#">Configurações da Conta</a>
+        <a href="../../index.html">Sair</a>
+    </div>
+
+    <div class="container">
+        <section id="cadastrar-usuario" class="form-section">
+            <h2>Cadastrar Usuário</h2>
+            <form id="form-cadastro">
+                <div class="form-group">
+                    <label for="nome">E-mail:</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+
+        <section id="cadastrar-treinamento" class="form-section">
+            <h2>Cadastrar Treinamento</h2>
+            <form id="form-novo-treinamento">
+                <div class="form-group">
+                    <label for="novo-treinamento">Treinamento:</label>
+                    <input type="text" id="novo-treinamento" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+
+        <section id="visualizar-treinamentos">
+            <h2>Treinamentos dos Usuários</h2>
+            <form id="form-treinamento">
+                <div class="form-group">
+                    <label for="usuario">Usuário:</label>
+                    <select id="usuario" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="treinamento">Treinamento:</label>
+                    <select id="treinamento" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="arquivo">Arquivo:</label>
+                    <input type="file" id="arquivo" required>
+                </div>
+                <div class="form-button"><button type="submit" id="add">Adicionar</button></div>
+                <p id="confirmation-message" class="confirmation-message"></p>
+            </form>
+            <table id="tabela-treinamentos">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Treinamento</th>
+                        <th>Data</th>
+                        <th>Arquivo</th>
+                        <th>Concluído</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div id="treinamentos-tabela-pagination" class="pagination-controls">
+                <button id="prev-tabela" disabled>Anterior</button>
+                <button id="next-tabela" disabled>Próximo</button>
+            </div>
+        </section>
+
+        <section id="grafico">
+            <h2>Desempenho dos Usuários</h2>
+            <canvas id="grafico-desempenho"></canvas>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('side-menu').style.width = '250px';
+        }
+
+        function closeMenu() {
+            document.getElementById('side-menu').style.width = '0';
+        }
+    </script>
+</body>
+</html>

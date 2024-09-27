@@ -413,3 +413,38 @@ th {
         opacity: 1;
     }
 }
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+    th, td {
+        padding: 8px; /* Reduzir o padding para telas menores */
+        font-size: 14px; /* Ajuste de fonte para legibilidade */
+    }
+
+    .button {
+        font-size: 14px; /* Ajuste de tamanho do botão */
+        padding: 8px 14px; /* Ajustar padding do botão */
+    }
+
+    .feedback {
+        font-size: 14px; /* Ajuste de tamanho da fonte no feedback */
+        padding: 8px; /* Ajuste de padding */
+    }
+}
+
+@media (max-width: 480px) {
+    th, td {
+        padding: 6px; /* Reduzir ainda mais o padding */
+        font-size: 12px; /* Ajuste de fonte para telas pequenas */
+    }
+
+    .button {
+        font-size: 12px; /* Ajuste de tamanho do botão */
+        padding: 6px 12px; /* Ajustar padding do botão */
+    }
+
+    .feedback {
+        font-size: 12px; /* Ajuste de tamanho da fonte no feedback */
+        padding: 6px; /* Ajuste de padding */
+    }
+}

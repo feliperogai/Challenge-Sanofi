@@ -155,7 +155,7 @@ header h1 {
     border: 1px solid #dddddd;
     border-radius: 8px;
     padding: 20px;
-    width: calc(20% - 20px); /* Largura para três tickets por linha */
+    width: calc(20% - 20px); /* Largura para cinco tickets por linha */
     transition: box-shadow 0.3s ease, transform 0.2s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -548,6 +548,30 @@ th {
     table, th, td {
         font-size: 0.75rem;
         padding: 8px;
+    }
+}
+/* Media Queries para responsividade */
+@media (max-width: 1024px) {
+    .ticket {
+        width: calc(25% - 20px); /* Largura para quatro tickets por linha */
+    }
+}
+
+@media (max-width: 768px) {
+    .ticket {
+        width: calc(33.33% - 20px); /* Largura para três tickets por linha */
+    }
+}
+
+@media (max-width: 480px) {
+    .ticket {
+        width: calc(50% - 20px); /* Largura para dois tickets por linha */
+    }
+}
+
+@media (max-width: 360px) {
+    .ticket {
+        width: 100%; /* Largura total para um ticket por linha */
     }
 }
 

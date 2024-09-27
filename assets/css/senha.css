@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Work Sans", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    background-color: rgb(122, 0, 230);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: rgb(131, 1, 245);
+}
+
+.container a {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: #7a00e6;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.container a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    label {
+        font-size: 0.875rem;
+    }
+
+    input {
+        font-size: 0.875rem;
+    }
+
+    button {
+        font-size: 0.875rem;
+        padding: 10px;
+    }
+
+    .container a {
+        font-size: 0.875rem;
+    }
+}

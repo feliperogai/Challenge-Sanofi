@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Define o estilo global da página */
+body {
+    margin: 0;
+    font-family: "Work Sans", sans-serif;
+    color: #333;
+    background-color: #f4f4f4;
+    padding-top: 20px; /* Ajusta o padding para compensar a altura do header fixo */
+    box-sizing: border-box; /* Garante que o padding seja considerado dentro do tamanho do box */
+}
+
+/* Estilo para o header */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: #ffffff;
+    color: #333;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que o conteúdo quebre para a linha de baixo se necessário */
+}
+
+header img {
+    height: 60px;
+    margin-right: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+/* Estilo do menu hamburguer */
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 20px;
+    position: relative;
+    z-index: 1100; /* Garantir que o ícone esteja acima da imagem */
+}
+
+.menu-icon div {
+    width: 30px; /* Aumentado */
+    height: 4px; /* Aumentado */
+    background-color: #333;
+    margin: 5px 0; /* Aumentado */
+}
+
+/* Menu Lateral */
+#side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    color: #333;
+    overflow-x: hidden;
+    padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+#side-menu .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    color: #fff;
+    background-color: rgb(122, 0, 230);
+    cursor: pointer;
+    border: none;
+}
+
+#side-menu .user-info {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+#side-menu .user-info p {
+    margin: 0 0 10px;
+}
+
+#side-menu a {
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: rgb(122, 0, 230);
+    display: block;
+    transition: background-color 0.3s;
+}
+
+#side-menu a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilo para o container geral */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 20px; /* Ajustado o padding superior para compensar a altura do header fixo */
+}
+
+/* Estilo para os formulários e seções */
+.form-section {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h2 {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="date"], select, input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-section button, .form-button button {
+    padding: 10px 15px;
+    background: rgb(122, 0, 230);
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.form-section button:hover, .form-button button:hover {
+    background: rgb(131, 1, 245);
+}
+
+/* Estilo para mensagens de confirmação */
+.confirmation-message {
+    color: green;
+    font-weight: bold;
+}
+
+/* Estilo para tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #f4f4f4;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.pagination-controls button {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    background: rgb(122, 0, 230);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.pagination-controls button:disabled {
+    background: #e9ecef;
+    cursor: not-allowed;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background: rgb(131, 1, 245);
+}
+
+/* Estilo para gráficos */
+#grafico {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Media Queries para responsividade */
+
+/* Estilos para telas menores que 768px (tablets e smartphones) */
+@media (max-width: 768px) {
+    header {
+        flex-direction: row;
+        padding: 10px;
+        justify-content: space-between; /* Garante que o menu hamburguer fique alinhado à esquerda */
+    }
+
+    .menu-icon {
+        margin: 0;
+        order: 1; /* Garante que o menu hamburguer fique à esquerda */
+    }
+
+    header img {
+        height: 50px; /* Ajusta o tamanho da imagem */
+        margin-right: 10px; /* Ajusta a margem */
+    }
+
+    header h1 {
+        font-size: 1.25rem;
+        margin-left: 10px; /* Ajusta a margem para que o título não fique colado à imagem */
+        flex: 2; /* Permite que o título ocupe mais espaço se necessário */
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .form-section button, .form-button button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    table, th, td {
+        font-size: 0.875rem;
+    }
+
+    #grafico {
+        padding: 15px;
+    }
+}
+
+/* Estilos para telas menores que 390px (smartphones pequenos) */
+@media (max-width: 390px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start; /* Garante que os itens fiquem alinhados à esquerda */
+        padding: 10px;
+    }
+
+    .menu-icon {
+        margin: 0;
+        align-self: flex-start; /* Garante que o menu hamburguer fique alinhado ao topo */
+    }
+
+    header img {
+        margin-bottom: 10px;
+        width: 100px; /* Define uma largura fixa para evitar problemas de redimensionamento */
+        height: auto;
+    }
+
+    header h1 {
+        font-size: 1rem;
+        text-align: center;
+        margin-left: 0;
+        flex: none; /* Garante que o título não expanda e fique centralizado */
+    }
+
+    h2 {
+        font-size: 1.125rem;
+    }
+
+    .form-section button, .form-button button {
+        font-size: 0.875rem;
+        padding: 10px;
+    }
+
+    table, th, td {
+        font-size: 0.75rem;
+        padding: 8px;
+    }
+}

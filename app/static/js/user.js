@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
         .then(data => {
-            const labels = ['Concluídos', 'Não Concluídos'];
+            const labels = ['Não Concluídos', 'Concluídos'];
             const concluded = data.treinamentos_concluidos || 0;
             const notConcluded = data.treinamentos_nao_concluidos || 0;
 
@@ -164,10 +164,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Formatar data para dd-mm-yyyy
     function formatDate(dateString) {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
-        const year = date.getFullYear();
+        // Exemplo de formatação 'DD-MM-YYYY'
+        const parts = dateString.split('-'); // Ajuste conforme o formato
+        if (parts.length !== 3) {
+            return 'Data inválida';
+        }
+        const day = parts[0];
+        const month = parts[1];
+        const year = parts[2];
+    
+        const formattedDate = new Date(`${year}-${month}-${day}`);
+        
+        // Verifica se a data é válida
+        if (isNaN(formattedDate.getTime())) {
+            return 'Data inválida';
+        }
+    
         return `${day}-${month}-${year}`;
     }
 

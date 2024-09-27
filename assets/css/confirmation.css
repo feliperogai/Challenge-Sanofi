@@ -1,0 +1,97 @@
+/* confirmation.css */
+
+/* Reset de margem e padding para evitar inconsistências */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo básico do corpo */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Container principal da confirmação */
+.confirmation-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    width: 80%;
+    max-width: 600px;
+}
+
+/* Estilo da imagem do logo */
+.confirmation-container img {
+    margin-bottom: 20px;
+    max-width: 100%;
+    height: auto;
+    height: 120px;
+}
+
+/* Estilo do título */
+.confirmation-container h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+/* Estilo do parágrafo */
+.confirmation-container p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Estilo dos links */
+.confirmation-options a {
+    color: rgb(122, 0, 230);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.confirmation-options a:hover {
+    text-decoration: underline;
+}
+
+/* Media Queries para responsividade */
+
+/* Ajustes para telas menores que 768px */
+@media (max-width: 768px) {
+    .confirmation-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .confirmation-container h2 {
+        font-size: 1.25rem;
+    }
+
+    .confirmation-container p {
+        font-size: 14px;
+    }
+}
+
+/* Ajustes para telas menores que 480px */
+@media (max-width: 480px) {
+    .confirmation-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .confirmation-container h2 {
+        font-size: 1.125rem;
+    }
+
+    .confirmation-container p {
+        font-size: 14px;
+    }
+}

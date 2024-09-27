@@ -81,7 +81,7 @@ def configure_routes(app):
             data_hora = request.form.get('date')
             assinatura = request.form.get('signature')
 
-            # Validação dos dados do formulário (opcional)
+            # Validação dos dados do formulário
             if not nome or not email or not data_hora or not assinatura:
                 flash('Todos os campos são obrigatórios.', 'danger')
                 return redirect(url_for('check'))
@@ -94,14 +94,61 @@ def configure_routes(app):
 
             try:
                 cursor = conn.cursor()
-                query = """
-                    INSERT INTO presenca (nome, email, data_hora, assinatura)
-                    VALUES (%s, %s, %s, %s)
-                """
-                cursor.execute(query, (nome, email, data_hora, assinatura))
-                conn.commit()
-                flash('Presença registrada com sucesso!', 'success')
+
+                # Verificar se o email existe na tabela de usuários
+                cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
+                usuario = cursor.fetchone()
+
+                if not usuario:
+                    flash('Usuário não encontrado.', 'danger')
+                    return redirect(url_for('check'))
+
+                usuario_id = usuario[0]
+
+                # Obter treinamentos vinculados ao usuário
+                cursor.execute("""
+                    SELECT t.id, t.data_hora 
+                    FROM treinamentos t 
+                    JOIN usuario_treinamento ut ON ut.treinamento_id = t.id 
+                    WHERE ut.usuario_id = %s
+                """, (usuario_id,))
+                treinamentos = cursor.fetchall()
+
+                # Verificar presença para cada treinamento
+                for treinamento in treinamentos:
+                    treinamento_id, treinamento_data_hora = treinamento
+                    
+                    # Verificar se a data e hora estão dentro dos limites
+                    if data_hora.startswith(treinamento_data_hora.date().isoformat()):
+                        # Converter data_hora para datetime
+                        data_hora_dt = datetime.strptime(data_hora, '%Y-%m-%dT%H:%M')
+                        
+                        # Verificar se não ultrapassa 4 horas após o treinamento
+                        if (data_hora_dt - treinamento_data_hora).total_seconds() <= 14400:
+                            # Inserir na tabela de presença
+                            query = """
+                                INSERT INTO presenca (nome, email, data_hora, assinatura)
+                                VALUES (%s, %s, %s, %s)
+                            """
+                            cursor.execute(query, (nome, email, data_hora, assinatura))
+
+                            # Obter o ID da presença inserida
+                            presenca_id = cursor.lastrowid
+
+                            # Atualizar a tabela de usuario_treinamento
+                            cursor.execute("""
+                                UPDATE usuario_treinamento 
+                                SET presenca_id = %s 
+                                WHERE usuario_id = %s AND treinamento_id = %s
+                            """, (presenca_id, usuario_id, treinamento_id))
+
+                            conn.commit()
+                            flash('Presença registrada com sucesso!', 'success')
+                            return redirect(url_for('check'))
+
+                flash('Nenhuma presença válida encontrada para registrar.', 'warning')
                 return redirect(url_for('check'))
+
             except mysql.connector.Error as err:
                 print(f"Erro ao inserir dados: {err}")
                 flash('Erro ao registrar presença. Tente novamente.', 'danger')
@@ -109,7 +156,7 @@ def configure_routes(app):
             finally:
                 cursor.close()
                 conn.close()
-        
+
         return render_template('check.html')
     
     @app.route('/admin-management')
